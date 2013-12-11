@@ -4,7 +4,7 @@
   "description": "A little bot for community accounts on twitter",
   "main": "app.js",
   "scripts": {},
-  "repository": "",
+  "repository": "https://github.com/ahhrrr/twitter-community-bot",
   "author": "Ezra Spier",
   "license": "BSD",
   "readmeFilename": "README.md",
