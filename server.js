@@ -1,59 +1,27 @@
-var Twitter = require('twit');
-var twit = new Twitter({
-    consumer_key: process.env.TWITTER_CONSUMER_KEY,
-    consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-    access_token: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
-});
-var express = require('express');
-var app = express();
-
-app.get('/', function(req, res){
-  res.send('Nothing to see here. Move along.');
-});
-
-var port = process.env.PORT || 3000;
-app.listen(port);
-console.log("Express is running on port " + port);
-
-var userStream = twit.stream('user', { with: 'user', replies: 'all' });
-
-userStream.on('tweet', function(tweet) {
-  console.log('Received mention! id: ' + tweet.id_str);
-  retweetById(tweet.id_str);
-});
-
-var retweetMentionsFromTimelineSince = function(sinceId) {
-  twit.get('statuses/mentions_timeline', {since_id: sinceId}, function (err, reply) {
-    for (var i = reply.length - 1 ; i >= 0; i--) {
-      retweetById(reply[i].id_str);
-    }
-  });
+var Server = function(config) {
 };
+Server.prototype.start = function() {
+  var app = require('express')();
 
+  var render_root = function(req, res) {
+    var html = [];
+    html.push('<head>');
+    html.push('  <title>Twitter Community Bot at your service</title>');
+    html.push('</head>');
+    html.push('<body>');
+    html.push('  <h1>Twitter Community Bot</h1>');
+    html.push('  <h4>Like a megaphone, but quieter.</h4>');
+    html.push('</body>');
+    res.send('<html>' + html.join('') + '</html>');
+  };
 
-var findLastRetweet = function(callback) {
-  twit.get('statuses/user_timeline', {}, function(err, reply) {
-    var mostRecentRetweetId;
-    reply.forEach(function(element, index, array) {
-      if (element.retweeted) {
-        mostRecentRetweetId = element.id_str;
-        return false;
-      }
-    });
+  app.get('/', render_root);
 
-    callback(mostRecentRetweetId);
-  });
-};
+  var port = process.env.PORT || 3000;
+  app.listen(port);
+  console.log("Express is running on port " + port);
+}
 
-var retweetById = function(idStr) {
-  twit.post('statuses/retweet/:id', {id: idStr}, function(err, reply) {
-    console.log("retweeted id:" + idStr);
-    console.log(err);
-    console.log(reply);
-  });
-};
-
-findLastRetweet(function(lastRetweetId) {
-  retweetMentionsFromTimelineSince(lastRetweetId);
-});
+if (module) {
+  module.exports = Server;
+}

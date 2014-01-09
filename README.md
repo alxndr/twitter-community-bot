@@ -6,11 +6,11 @@ A little Twitter bot based on the old [@oberlin](https://twitter.com/oberlin) co
 
 Back in the good old days (circa 2008-2010), I was in college and there was a great little community Twitter account at [@oberlin](https://twitter.com/oberlin). This account, when you tweeted at it, would retweet your message – making it really easy to broadcast to everyone in the community. As I understand it, the account was automated by [Yahoo Pipes](http://pipes.yahoo.com/pipes/), but over time it fell into disrepair.
 
-I keep thinking back to those days, and about how nothing better has really emerged as a good way to organize groups on Twitter. Hashtags are great, but they are ephemeral and people have to actively choose to follow them. Twitter Community Bot is my little attempt to bring back the magic.  
+I keep thinking back to those days, and about how nothing better has really emerged as a good way to organize groups on Twitter. Hashtags are great, but they are ephemeral and people have to actively choose to follow them. Twitter Community Bot is my little attempt to bring back the magic.
 
 ### Functionality
 
-Twitter Community Bot takes over a Twitter account. When other Twitter users mention this account, Community Bot retweets the tweets. 
+Twitter Community Bot takes over a Twitter account. When other Twitter users mention this account, Community Bot retweets the tweets.
 
 That's it. But I'm open to [other suggestions about how it might work](https://github.com/ahhrrr/twitter-community-bot/issues).
 

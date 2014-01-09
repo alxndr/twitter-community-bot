@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "A little bot for community accounts on twitter",
   "main": "app.js",
-  "scripts": {},
+  "scripts": {
+    "start": "node app.js"
+  },
   "repository": "https://github.com/ahhrrr/twitter-community-bot",
   "author": "Ezra Spier",
   "license": "BSD",
