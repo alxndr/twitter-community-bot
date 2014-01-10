@@ -67,6 +67,7 @@ tweet json looks like:
 var TCB = function(config) {
   this.T = config.T;
   this.term = config.term;
+  this.username = 'drwxrxrx_dev'; // todo find a better way to do this
 }
 TCB.prototype.start = function() {
   var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
@@ -74,24 +75,45 @@ TCB.prototype.start = function() {
 };
 TCB.prototype.term_mentioned = function(tweet) {
   if (this.ok_to_post(tweet)) {
-    this.log_tweet(tweet);
-    this.T.post('statuses/update', { status: this.process_tweet(tweet) }, function(err, reply) { console.log('err'); console.log(err); console.log('reply'); console.log(reply); });
+    console.log(this.format_tweet(tweet));
+    this.repost(tweet);
   }
 };
 TCB.prototype.ok_to_post = function(tweet) {
+  // todo look for thanks, RT, other stuff
   return tweet.user &&
     tweet.user.screen_name &&
-    tweet.user.screen_name != 'drwxrxrx_dev'
+    tweet.user.screen_name != this.username
   ;
 };
-TCB.prototype.log_tweet = function(tweet) {
-  if (tweet && tweet.user) {
-    console.log('[' + tweet.created_at.substring(0, 19) + '] @' + tweet.user.screen_name + ': "' + tweet.text + '"');
-  }
+TCB.prototype.format_tweet = function(tweet) {
+  return '[' + tweet.created_at.substring(0, 19) + '] @' + tweet.user.screen_name + ': "' + tweet.text + '"';
 }
 TCB.prototype.process_tweet = function(tweet) {
-  return '{@' + tweet.user.screen_name + '} ' +
-    tweet.text;
+  var text = tweet.text;
+  var re = new RegExp('^\\s*@' + this.username + '\\s+');
+  text = text.replace(re, '');
+  if (text.length > 100) { // todo tweak
+    // truncate and stick link to tweet
+  }
+  var processed = '{@' + tweet.user.screen_name + '} ' + text;
+  console.log('processed tweet into: ' + processed);
+  return processed;
+}
+TCB.prototype.repost = function(tweet) {
+  var text = this.process_tweet(tweet);
+  this.T.post(
+    'statuses/update',
+    { status: text },
+    function(err, reply) {
+      if (err) {
+        console.error('repost received error');
+        console.error(err);
+      } else {
+        console.log('posted! ' + text);
+      }
+    }
+  );
 }
 
 if (module) {
