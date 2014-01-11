@@ -1,20 +1,22 @@
 {
-  "name": "twitter-community-bot",
-  "version": "0.0.1",
-  "description": "A little bot for community accounts on twitter",
-  "main": "app.js",
-  "scripts": {
+  "name": "twitter-community-bot"
+  ,"version": "0.0.1"
+  ,"description": "A little bot for community accounts on twitter"
+  ,"main": "app.js"
+  ,"scripts": {
     "start": "node app.js"
-  },
-  "repository": "https://github.com/ahhrrr/twitter-community-bot",
-  "author": "Ezra Spier",
-  "license": "BSD",
-  "readmeFilename": "README.md",
-  "engines": {
+    ,"test": "jasmine-node spec"
+    ,"autotest": "jasmine-node spec --autotest --watch ."
+  }
+  ,"repository": "https://github.com/ahhrrr/twitter-community-bot"
+  ,"author": "Ezra Spier"
+  ,"license": "BSD"
+  ,"readmeFilename": "README.md"
+  ,"engines": {
     "node": "0.10.x"
-  },
-  "dependencies": {
-    "twit": "~1.1.11",
-    "express": "~3.4.6"
+  }
+  ,"dependencies": {
+    "twit": "~1.1.11"
+    ,"express": "~3.4.6"
   }
 }
