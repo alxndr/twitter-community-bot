@@ -1,17 +1,4 @@
-/*
-tweet json that we care about looks like:
-{
-  created_at: 'Wed Dec 11 04:57:51 +0000 2013',
-  text: 'Berlin options that are well-meaning on the encirclement: YlSU',
-  user: {
-     screen_name: 'MaryBen00993461',
-     lang: 'en',
-  },
-  lang: 'en'
-}
-*/
-
-var TCB = require('../tcb.js');
+var TCB = require('../src/tcb.js');
 
 describe('TCB', function() {
   var tcb;
@@ -30,15 +17,31 @@ describe('TCB', function() {
       expect(tcb.T.stream).toHaveBeenCalled();
       expect(tcb.T.stream().on).toHaveBeenCalled();
     });
+  });
 
-    xit('should do stuff on tweet', function() {
-      tcb.T = {
-        stream: function() {
-          return jasmine.createSpyObj('stream', ['on']);
-        }
-      };
-      tcb.start();
-      expect(tcb.T.stream.on).toHaveBeenCalledWith('tweet', jasmine.any(Function));
+  xdescribe('#term_mentioned', function() {
+    it('should create a tweet object', function() {
     });
   });
+
+  describe('#repost', function() {
+    beforeEach(function() {
+      tcb.T = jasmine.createSpyObj('T', ['post']);
+    });
+    afterEach(function() {
+      delete(tcb.T);
+    });
+    it('should post processed text', function() {
+      var tweet = jasmine.createSpyObj('tweet', ['process_text']);
+      tweet.process_text.andReturn('foo bar');
+      tcb.repost(tweet);
+      expect(tweet.process_text).toHaveBeenCalledWith(tcb.username_regex);
+      expect(tcb.T.post).toHaveBeenCalledWith(
+        'statuses/update'
+        ,{ status: 'foo bar' }
+        ,jasmine.any(Function)
+      );
+    });
+  });
+
 });

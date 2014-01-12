@@ -4,12 +4,12 @@
   ,"description": "A little bot for community accounts on twitter"
   ,"main": "app.js"
   ,"scripts": {
-    "start": "node app.js"
+    "start": "node src/app.js"
     ,"test": "jasmine-node spec"
     ,"autotest": "jasmine-node spec --autotest --watch ."
   }
-  ,"repository": "https://github.com/ahhrrr/twitter-community-bot"
-  ,"author": "Ezra Spier"
+  ,"repository": "https://github.com/alxndr/twitter-community-bot"
+  ,"author": "Ezra Spier, Alexander Quine"
   ,"license": "BSD"
   ,"readmeFilename": "README.md"
   ,"engines": {
