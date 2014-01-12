@@ -4,13 +4,16 @@ var Tweet = function(tweet_json) {
   this.username = tweet_json.user.screen_name;
   this.url = this.determine_url();
 }
+
 Tweet.prototype.determine_url = function() {
   var url = 'http://twitter.com/' + this.username + '/status/' + this.id_str;
   return url;
 }
+
 Tweet.prototype.is_by = function(name) {
   return this.username == name;
 };
+
 Tweet.prototype.to_string = function() {
   return '[' +
     this.tweet_json.created_at.substring(0, 19) +
@@ -20,6 +23,7 @@ Tweet.prototype.to_string = function() {
     this.tweet_json.text +
     '"';
 }
+
 Tweet.prototype.process_text = function(username_regex) {
   var tweet_text = this.tweet_json.text.replace(username_regex, '');
   var new_tweet = '{@' + this.tweet_json.user.screen_name + '} ' + tweet_text;
@@ -29,6 +33,13 @@ Tweet.prototype.process_text = function(username_regex) {
   }
   return new_tweet;
 }
+
+Tweet.prototype.is_repostable = function(config) {
+  if (this.is_by(config.exclude_username)) {
+    return false;
+  }
+  return true;
+};
 
 if (module) {
   module.exports = Tweet;

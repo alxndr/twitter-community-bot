@@ -6,7 +6,6 @@
   ,"scripts": {
     "start": "node src/app.js"
     ,"test": "jasmine-node spec"
-    ,"autotest": "jasmine-node spec --autotest --watch ."
   }
   ,"repository": "https://github.com/alxndr/twitter-community-bot"
   ,"author": "Ezra Spier, Alexander Quine"
@@ -18,6 +17,7 @@
   ,"dependencies": {
     "express": "~3.4.6"
     ,"jasmine-node": "~1.12"
+    ,"pg": "~2.11"
     ,"twit": "~1.1.11"
   }
 }

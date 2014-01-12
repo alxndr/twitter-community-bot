@@ -31,6 +31,7 @@ describe('TCB', function() {
     afterEach(function() {
       delete(tcb.T);
     });
+
     it('should post processed text', function() {
       var tweet = jasmine.createSpyObj('tweet', ['process_text']);
       tweet.process_text.andReturn('foo bar');
@@ -43,5 +44,6 @@ describe('TCB', function() {
       );
     });
   });
+
 
 });
