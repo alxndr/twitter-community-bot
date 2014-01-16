@@ -82,3 +82,9 @@ Want to set up a community bot for your community? Just follow these steps:
   npm start
   ```
 
+
+### database ... WIP
+
+This is a work in progress.
+
+Create a postgres database named 'tcb' owned by the user 'postgres' with the password '1234'.

@@ -22,7 +22,7 @@ Server.prototype.start = function() {
   var port = process.env.PORT || 3000;
   app.listen(port);
   console.log("Express is running on port " + port);
-}
+};
 
 if (module) {
   module.exports = Server;

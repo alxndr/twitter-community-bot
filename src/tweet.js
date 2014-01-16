@@ -1,14 +1,13 @@
 var Tweet = function(tweet_json) {
   this.tweet_json = tweet_json;
-  this.id_str = this.tweet_json.id_str; // number is too big for js ints
+  this.id_str = this.tweet_json.id_str; // keep a string, bc the numerical value is too big for js ints
   this.username = tweet_json.user.screen_name;
   this.url = this.determine_url();
-}
+};
 
 Tweet.prototype.determine_url = function() {
-  var url = 'http://twitter.com/' + this.username + '/status/' + this.id_str;
-  return url;
-}
+  return 'http://twitter.com/' + this.username + '/status/' + this.id_str;
+};
 
 Tweet.prototype.is_by = function(name) {
   return this.username == name;
@@ -22,17 +21,18 @@ Tweet.prototype.to_string = function() {
     ': "' +
     this.tweet_json.text +
     '"';
-}
+};
 
 Tweet.prototype.process_text = function(username_regex) {
   var tweet_text = this.tweet_json.text.replace(username_regex, '');
-  var new_tweet = '{@' + this.tweet_json.user.screen_name + '} ' + tweet_text;
-  if (new_tweet.length > 140) {
-    var truncated_new_tweet = new_tweet.substring(0, new_tweet.length - (this.url.length + 9));
-    new_tweet = truncated_new_tweet + '... link: ' + this.url;
+  var processed_tweet_text = '{@' + this.tweet_json.user.screen_name + '} ' + tweet_text;
+  if (processed_tweet_text.length > 140) {
+    // TODO extract
+    var truncated_text = processed_tweet_text.substring(0, processed_tweet_text.length - (this.url.length + 9));
+    processed_tweet_text = truncated_text + '... link: ' + this.url;
   }
-  return new_tweet;
-}
+  return processed_tweet_text;
+};
 
 Tweet.prototype.is_repostable = function(config) {
   if (this.is_by(config.exclude_username)) {

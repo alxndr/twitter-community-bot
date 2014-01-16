@@ -36,7 +36,7 @@ describe('TCB', function() {
       var tweet = jasmine.createSpyObj('tweet', ['process_text']);
       tweet.process_text.andReturn('foo bar');
       tcb.repost(tweet);
-      expect(tweet.process_text).toHaveBeenCalledWith(tcb.username_regex);
+      expect(tweet.process_text).toHaveBeenCalledWith(tcb.remove_regex);
       expect(tcb.T.post).toHaveBeenCalledWith(
         'statuses/update'
         ,{ status: 'foo bar' }

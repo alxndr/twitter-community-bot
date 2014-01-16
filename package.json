@@ -4,7 +4,7 @@
   ,"description": "A little bot for community accounts on twitter"
   ,"main": "app.js"
   ,"scripts": {
-    "start": "node src/app.js @drwxrxrx_dev"
+    "start": "node src/app.js BarackObama"
     ,"test": "jasmine-node spec"
   }
   ,"repository": "https://github.com/alxndr/twitter-community-bot"
@@ -17,11 +17,12 @@
   ,"dependencies": {
     "db-migrate": "~0.6"
     ,"express": "~3.4.6"
-    ,"jasmine-node": "~1.12"
     ,"node-env-file": "~0.1"
     ,"pg": "~2.11"
     ,"twit": "~1.1.11"
   }
   ,"devDependencies": {
+    "jasmine-node": "~1.12"
+    ,"supervisor": "~0.5"
   }
 }
