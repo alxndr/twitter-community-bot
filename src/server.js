@@ -11,6 +11,8 @@ Server.prototype.start = function() {
     html.push('<body>');
     html.push('  <h1>Twitter Community Bot</h1>');
     html.push('  <h4>Like a megaphone, but quieter.</h4>');
+    html.push('  <p><b>todo:</b> list tweets in the DB</p>');
+    html.push('  <p>rendered at ' + new Date().toString() + '</p>');
     html.push('</body>');
     res.send('<html>' + html.join('') + '</html>');
   };
