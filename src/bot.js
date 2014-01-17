@@ -11,6 +11,8 @@ var TCBot = function(config) {
   }
   this.trim_regex = new RegExp('^\\s*@' + this.own_username + '\\s+');
   console.log('trimming off ' + this.trim_regex);
+
+  this.tweet_queue = [];
 };
 
 // extend TCBot with EventEmitter
@@ -25,10 +27,25 @@ TCBot.prototype.start = function() {
 TCBot.prototype.term_mentioned = function(tweet_json) {
   var tweet = new Tweet(tweet_json);
 
-  if (tweet.is_repostable({exclude_username: this.own_username})) {
+  if (this.should_repost(tweet)) {
     console.log('heard: ' + tweet.to_string());
     this.repost(tweet);
   }
+};
+
+TCBot.prototype.should_repost = function(tweet) {
+  if (tweet.is_by(this.own_username)) {
+    // TODO be nice to have twit/twitter filter us out for us
+    return false;
+  }
+
+  // TODO
+  // retweets
+  // thanks
+  // similar tweets
+  // overposts
+
+  return true;
 };
 
 TCBot.prototype.repost = function(tweet) {

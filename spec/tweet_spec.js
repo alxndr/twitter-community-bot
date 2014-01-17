@@ -71,23 +71,5 @@ describe('Tweet', function() {
     });
   });
 
-  describe('#is_repostable', function() {
-    beforeEach(function() {
-      tweet.username = 'foo';
-    });
-    describe('when tweet author is excluded', function() {
-      it('should be false', function() {
-        expect(tweet.is_repostable({exclude_username: 'foo'})).toBeFalsy();
-      });
-    });
-    xdescribe('when RT');
-    xdescribe('when thanks');
-
-    describe('when tweet author not excluded', function() {
-      it('should be true', function() {
-        expect(tweet.is_repostable({exclude_username: 'bar'})).toBeTruthy();
-      });
-    });
-  });
 
 });

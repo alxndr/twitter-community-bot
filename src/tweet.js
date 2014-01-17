@@ -5,13 +5,6 @@ var Tweet = function(tweet_json) {
   this.url = this.determine_url();
 };
 
-Tweet.prototype.is_repostable = function(config) {
-  if (this.is_by(config.exclude_username)) {
-    return false;
-  }
-  return true;
-};
-
 Tweet.prototype.to_string = function() {
   return '[' +
     this.tweet_json.created_at.substring(0, 19) +

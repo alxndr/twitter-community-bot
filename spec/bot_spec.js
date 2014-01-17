@@ -31,6 +31,24 @@ describe('TCBot', function() {
     });
   });
 
+  describe('#should_repost', function() {
+    beforeEach(function() {
+      bot.own_username = 'foo';
+    });
+    describe('when tweet is by self', function() {
+      var tweet;
+      beforeEach(function() {
+        tweet = jasmine.createSpyObj('tweet', ['is_by']);
+        tweet.is_by.andReturn(true);
+      });
+      it('should be false', function() {
+        expect(bot.should_repost(tweet)).toBeFalsy();
+      });
+    });
+    xdescribe('when RT');
+    xdescribe('when thanks');
+  });
+
   describe('#repost', function() {
     beforeEach(function() {
       bot.T = jasmine.createSpyObj('T', ['post']);
