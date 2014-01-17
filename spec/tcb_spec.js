@@ -20,8 +20,15 @@ describe('TCB', function() {
   });
 
   xdescribe('#term_mentioned', function() {
-    it('should create a tweet object', function() {
-    });
+    it('should create a tweet object');
+
+    describe('when tweet is not by username', function() {
+      it('should repost');
+    })
+
+    describe('when tweet is by username', function() {
+      it('should not repost');
+    })
   });
 
   describe('#repost', function() {
@@ -44,6 +51,5 @@ describe('TCB', function() {
       );
     });
   });
-
 
 });

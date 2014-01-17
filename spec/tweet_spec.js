@@ -10,9 +10,15 @@ describe('Tweet', function() {
     delete(tweet);
   });
 
-  describe('#url', function() {
+  describe('.url', function() {
     it('should exist', function() {
       expect(tweet.url).toEqual('http://twitter.com/drwxrxrx/status/422139517030502401');
+    });
+  });
+
+  describe('#determine_url', function() {
+    it('should put together username and id_str', function() {
+      expect(tweet.determine_url()).toEqual('http://twitter.com/drwxrxrx/status/422139517030502401');
     });
   });
 
@@ -39,6 +45,7 @@ describe('Tweet', function() {
       var text = tweet.to_string();
       expect(text).toMatch(tweet.username);
       expect(text).toMatch(tweet.text);
+      // also timestamp
     });
   });
 
@@ -52,6 +59,15 @@ describe('Tweet', function() {
     });
     it('should remove passed regex', function() {
       expect(processed).not.toMatch(/@drwxrxrx_dev /);
+    });
+
+    describe('when reprocessed text is over 140 chars', function() {
+      beforeEach(function() {
+        tweet.tweet_json.text = 'Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores.';
+      });
+      it('should truncate with link', function() {
+        expect(tweet.process_text(/foo/)).toEqual('{@drwxrxrx} Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov... link: http://twitter.com/drwxrxrx/status/422139517030502401');
+      });
     });
   });
 
