@@ -7,10 +7,10 @@ var TCBot = function(config) {
   this.term = config.term;
   this.mute = config.mute;
   if (!this.mute) {
-    if (!jasmine) console.log('posting as ' + this.own_username);
+    console.log('posting as ' + this.own_username);
   }
   this.trim_regex = new RegExp('^\\s*@' + this.own_username + '\\s+');
-  if (!jasmine) console.log('trimming off ' + this.trim_regex);
+  console.log('trimming off ' + this.trim_regex);
 };
 
 // extend TCBot with EventEmitter
@@ -18,7 +18,7 @@ TCBot.prototype = new EE();
 
 TCBot.prototype.start = function() {
   var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
-  if (!jasmine) console.log('listening for "' + this.term + '"');
+  console.log('listening for "' + this.term + '"');
   stream.on('tweet', this.term_mentioned.bind(this));
 };
 
@@ -26,7 +26,7 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
   var tweet = new Tweet(tweet_json);
 
   if (tweet.is_repostable({exclude_username: this.own_username})) {
-    if (!jasmine) console.log('heard: ' + tweet.to_string());
+    console.log('heard: ' + tweet.to_string());
     this.repost(tweet);
   }
 };
@@ -34,7 +34,7 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
 TCBot.prototype.repost = function(tweet) {
   var self = this;
   if (this.mute) {
-    if (!jasmine) console.log('MUTE');
+    console.log('MUTE');
     self.emit('posted', tweet);
     return;
   }
@@ -48,7 +48,7 @@ TCBot.prototype.repost = function(tweet) {
         console.error('!! ERROR reposting');
       } else {
         var tweet = new Tweet(tweet_json);
-        if (!jasmine) console.log('posted: ' + tweet.to_string());
+        console.log('posted: ' + tweet.to_string());
         self.emit('posted', tweet);
       }
     }
