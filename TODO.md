@@ -1,4 +1,4 @@
 for the comments I want to leave in package.json
 
-    $ supervisor src/app.js                  # autorun
+    $ supervisor -n error -x npm start       # autorun
     $ jasmine-node spec --autotest --watch . # autotest
