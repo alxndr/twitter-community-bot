@@ -1,6 +1,6 @@
 var EE = require('events').EventEmitter;
 
-var Server = function() {
+var WebServer = function() {
   this.express = require('express')();
   this.port = process.env.PORT || 3000;
   this.stuff = '';
@@ -11,16 +11,16 @@ var Server = function() {
   });
 };
 
-// extend Server with EventEmitter
-Server.prototype = new EE();
+// extend WebServer with EventEmitter
+WebServer.prototype = new EE();
 
-Server.prototype.start = function(yieldd) {
+WebServer.prototype.start = function(yieldd) {
   this.express.get('/', this.render_root.bind(this));
   this.express.listen(this.port);
   console.log("Express is running on port " + this.port);
 };
 
-Server.prototype.render_root = function(req, res) {
+WebServer.prototype.render_root = function(req, res) {
   var html = [];
   html.push('<head>');
   html.push('  <title>Twitter Community Bot at your service</title>');
@@ -33,7 +33,7 @@ Server.prototype.render_root = function(req, res) {
   res.send('<html>' + html.join('') + '</html>');
 };
 
-Server.prototype.content_for = function(_where) {
+WebServer.prototype.content_for = function(_where) {
   // just body content so far
   if (!this.tweets.length) {
     return '<p>No tweets!</p>';
@@ -52,5 +52,5 @@ Server.prototype.content_for = function(_where) {
 };
 
 if (module) {
-  module.exports = Server;
+  module.exports = WebServer;
 }

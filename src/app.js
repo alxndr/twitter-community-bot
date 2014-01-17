@@ -9,23 +9,26 @@ var secrets = {
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
-var TCB = require('./tcb.js');
+var TCBot = require('./bot.js');
 var Twit = require('twit');
 var WebServer = require('./server.js');
 
-var term = '@drwxrxrx_dev'; // TODO take from env
-var twit = new Twit(secrets);
+var bot = new TCBot({
+  T: new Twit(secrets),
+  own_username: process.env.TWITTER_CONSUMER_USERNAME, // no @
+  term: process.env.TCB_LISTENING_TERM || '@' + process.env.TWITTER_CONSUMER_USERNAME,
+  mute: process.env.TCB_MUTE
+});
 
-var bot = new TCB({ T: twit, term: term });
 var webserver = new WebServer();
 
 bot.on('posted', function(tweet) {
   webserver.emit('posted', tweet);
 });
 
-webserver.on('approved', function(tweet) {
-  bot.emit('post', tweet);
-});
+//webserver.on('approved', function(tweet) {
+//  bot.emit('post', tweet);
+//});
 
 bot.start();
 webserver.start();
