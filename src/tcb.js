@@ -1,3 +1,4 @@
+var EE = require('events').EventEmitter;
 var Tweet = require('./tweet.js');
 
 var TCB = function(config) {
@@ -6,6 +7,9 @@ var TCB = function(config) {
   this.username = 'drwxrxrx_dev'; // todo find a better way to do this
   this.username_regex = new RegExp('^\\s*@' + this.username + '\\s+');
 };
+
+// extend TCB with EventEmitter
+TCB.prototype = new EE();
 
 TCB.prototype.start = function() {
   var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
@@ -23,6 +27,7 @@ TCB.prototype.term_mentioned = function(tweet_json) {
 };
 
 TCB.prototype.repost = function(tweet) {
+  var self = this;
   var text = tweet.process_text(this.username_regex);
   this.T.post(
     'statuses/update',
@@ -34,6 +39,7 @@ TCB.prototype.repost = function(tweet) {
       } else {
         var tweet = new Tweet(tweet_json);
         console.log('posted: ' + tweet.to_string());
+        self.emit('posted', tweet);
       }
     }
   );

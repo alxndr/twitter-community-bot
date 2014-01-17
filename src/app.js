@@ -11,10 +11,22 @@ var secrets = {
 
 var TCB = require('./tcb.js');
 var Twit = require('twit');
-//var WebServer = require('./server.js');
+var WebServer = require('./server.js');
 
 var term = '@drwxrxrx_dev'; // TODO take from env
 var twit = new Twit(secrets);
 
-new TCB({ T: twit, term: term }).start();
-//new WebServer().start();
+var bot = new TCB({ T: twit, term: term });
+var webserver = new WebServer();
+
+bot.on('posted', function(tweet) {
+  webserver.emit('posted', tweet);
+});
+
+webserver.on('approved', function(tweet) {
+  bot.emit('post', tweet);
+});
+
+bot.start();
+webserver.start();
+
