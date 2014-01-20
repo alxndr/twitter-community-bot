@@ -26,16 +26,23 @@ TCBot.prototype.start = function() {
 
 TCBot.prototype.term_mentioned = function(tweet_json) {
   var tweet = new Tweet(tweet_json);
+  console.log('heard: ' + tweet.to_string());
 
   if (this.should_repost(tweet)) {
-    console.log('heard: ' + tweet.to_string());
     this.repost(tweet);
+  } else {
+    this.emit('not_posted', tweet);
   }
 };
 
 TCBot.prototype.should_repost = function(tweet) {
   if (tweet.is_by(this.own_username)) {
     // TODO be nice to have twit/twitter filter us out for us
+    return false;
+  }
+
+  // TODO remove
+  if (tweet.is_by('drwxrxrx')) {
     return false;
   }
 
@@ -49,10 +56,11 @@ TCBot.prototype.should_repost = function(tweet) {
 };
 
 TCBot.prototype.repost = function(tweet) {
+  // will emit 'posted'
   var self = this;
   if (this.mute) {
     console.log('MUTE');
-    self.emit('posted', tweet);
+    this.emit('posted', tweet);
     return;
   }
   var text = tweet.process_text(this.trim_regex);

@@ -2,7 +2,13 @@ if (!process.env.TWITTER_CONSUMER_KEY) {
   var env = require('node-env-file');
   env('./.env');
 }
-var secrets = {
+if (!process.env.TWITTER_CONSUMER_USERNAME) {
+  console.error('ENV vars:');
+  console.error(process.env);
+  throw new Error('missing TWITTER_CONSUMER_USERNAME in env!');
+}
+
+var twit_secrets = {
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
   access_token: process.env.ACCESS_TOKEN,
@@ -14,7 +20,7 @@ var Twit = require('twit');
 var WebServer = require('./server.js');
 
 var bot = new TCBot({
-  T: new Twit(secrets),
+  T: new Twit(twit_secrets),
   own_username: process.env.TWITTER_CONSUMER_USERNAME, // no @
   term: process.env.TCB_LISTENING_TERM || '@' + process.env.TWITTER_CONSUMER_USERNAME,
   mute: process.env.TCB_MUTE
@@ -23,12 +29,12 @@ var bot = new TCBot({
 var webserver = new WebServer();
 
 bot.on('posted', function(tweet) {
-  webserver.emit('posted', tweet);
+  webserver.tweet_posted(tweet);
 });
 
-//webserver.on('approved', function(tweet) {
-//  bot.emit('post', tweet);
-//});
+bot.on('not_posted', function(tweet) {
+  webserver.queue_tweet(tweet);
+});
 
 bot.start();
 webserver.start();
