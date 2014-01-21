@@ -1,4 +1,6 @@
-var TCBot = require('../src/bot.js');
+var rewire = require('rewire');
+
+var TCBot = rewire('../src/bot.js');
 
 describe('TCBot', function() {
   var bot;
@@ -19,15 +21,47 @@ describe('TCBot', function() {
     });
   });
 
-  xdescribe('#term_mentioned', function() {
-    it('should create a tweet object');
-
-    describe('when tweet is not by username', function() {
-      it('should repost');
+  describe('#term_mentioned', function() {
+    beforeEach(function() {
+      TCBot.__set__({
+        Tweet : jasmine.createSpy('Tweet spy')
+      });
+      TCBot.__get__('Tweet').andReturn({
+        to_string: function(){}
+      });
+    });
+    afterEach(function() {
+      delete(TCBot);
     });
 
-    describe('when tweet is by username', function() {
-      it('should not repost');
+    describe('when we can repost', function() {
+      beforeEach(function() {
+        spyOn(bot, 'should_repost').andReturn(true);
+        spyOn(bot, 'repost');
+      });
+      it('should create a tweet object', function() {
+        bot.term_mentioned();
+        expect(TCBot.__get__('Tweet')).toHaveBeenCalled();
+      });
+      it('should call repost', function() {
+        bot.term_mentioned();
+        expect(bot.repost).toHaveBeenCalled();
+      });
+    });
+
+    describe('when we cannot repost', function() {
+      beforeEach(function() {
+        spyOn(bot, 'should_repost').andReturn(false);
+      });
+      it('should create a tweet object', function() {
+        bot.term_mentioned();
+        expect(TCBot.__get__('Tweet')).toHaveBeenCalled();
+      });
+      it('should not call repost', function() {
+        spyOn(bot, 'repost');
+        bot.term_mentioned();
+        expect(bot.repost).not.toHaveBeenCalled();
+      });
     });
   });
 
