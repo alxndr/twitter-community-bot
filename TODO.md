@@ -4,3 +4,7 @@ for the comments I want to leave in package.json
     $ jasmine-node spec --autotest --watch . # autotest
 
 no quote marks in .env
+
+revisit bot/server communication
+
+backfill tests for queue
