@@ -3,12 +3,39 @@
   <head>
     <title>Twitter Community Bot at your service</title>
     <link href="/stylesheets/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://timeago.yarp.com/jquery.timeago.js"></script>
   </head>
   <body>
     <h1>Twitter Community Bot</h1>
     <p>Like a megaphone, but quieter.</p>
 
+    <hr/>
+
     {{{body}}}
 
+    <footer>
+      <dl>
+        <dt>Updated</dt>
+        <dd>
+          <abbr class="timeago" title="{{render_time_iso}}">
+            {{render_time_str}}
+          </abbr>
+        </dd>
+
+        <dt>Server listening since</dt>
+        <dd>
+          <abbr class="timeago" title="{{started_at_iso}}">
+            {{started_at_str}}
+          </abbr>
+        </dd>
+      </dl>
+    </footer>
+
+    <script>
+      jQuery(document).ready(function() {
+        jQuery('abbr.timeago').timeago();
+      });
+    </script>
   </body>
 </html>

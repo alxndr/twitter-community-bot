@@ -32,11 +32,16 @@ WebServer.prototype.start = function() {
 };
 
 WebServer.prototype.render_home = function(req,res) {
+  var now = new Date();
   res.render('home', {
     params: req.params
     , tweets_queued: this.tweets_queued
     , tweets_queued_length: this.tweets_queued_id_strs().length
     , tweets_posted: this.tweets_posted
+    , started_at_str: this.started_at.toString()
+    , started_at_iso: this.started_at.toISOString()
+    , render_time_str: now.toString()
+    , render_time_iso: now.toISOString()
   });
 };
 

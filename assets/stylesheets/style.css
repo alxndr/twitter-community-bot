@@ -1,5 +1,7 @@
 * { font-family: sans-serif; }
 
+h1 { margin-bottom: 0; }
+p { margin-top: 0; }
 ul { margin: 0; padding: 0; }
 li { list-style: none; }
 li form { float: left; }
@@ -12,3 +14,8 @@ li form { float: left; }
 .tweet .text:after { content: '"'; }
 .tweet .date:before { content: 'at '; }
 .tweet .date { font-size: 0.9em; color: gray; }
+
+footer { position: fixed; bottom: 0; font-size: 0.8em; }
+footer dl>* { display: inline; }
+footer dd { margin: 0; }
+footer dd abbr:after { content: '.'}
