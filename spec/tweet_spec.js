@@ -66,7 +66,7 @@ describe('Tweet', function() {
         tweet.tweet_json.text = 'Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores.';
       });
       it('should truncate with link', function() {
-        expect(tweet.process_text(/foo/)).toEqual('{@drwxrxrx} Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov... link: http://twitter.com/drwxrxrx/status/422139517030502401');
+        expect(tweet.process_text(/foo/)).toEqual('{@drwxrxrx} Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov l… link: http://twitter.com/drwxrxrx/status/422139517030502401');
       });
     });
   });

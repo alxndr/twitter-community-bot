@@ -19,8 +19,8 @@ Tweet.prototype.process_text = function(username_regex) {
   var tweet_text = this.tweet_json.text.replace(username_regex, '');
   var new_tweet_text = '{@' + this.tweet_json.user.screen_name + '} ' + tweet_text;
   if (new_tweet_text.length > 140) {
-    var truncated_new_tweet = new_tweet_text.substring(0, new_tweet_text.length - (this.url.length + 9));
-    new_tweet_text = truncated_new_tweet + '... link: ' + this.url;
+    var truncated_new_tweet = new_tweet_text.substring(0, new_tweet_text.length - (this.url.length + 7));
+    new_tweet_text = truncated_new_tweet + '… link: ' + this.url;
   }
   return new_tweet_text;
 };
