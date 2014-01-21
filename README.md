@@ -1,4 +1,4 @@
-## twitter-community-bot [![Build Status](https://travis-ci.org/alxndr/twitter-community-bot.png?branch=master)](https://travis-ci.org/alxndr/twitter-community-bot)
+## twitter-community-bot [![Build Status](https://travis-ci.org/alxndr/twitter-community-bot.png?branch=master)](https://travis-ci.org/alxndr/twitter-community-bot) [![Code Climate](https://codeclimate.com/github/alxndr/twitter-community-bot.png)](https://codeclimate.com/github/alxndr/twitter-community-bot)
 
 A little Twitter bot based on the old [@oberlin](https://twitter.com/oberlin) community account.
 
