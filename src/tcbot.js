@@ -71,6 +71,14 @@ TCBot.prototype.repost = function(tweet) {
       if (err) {
         console.error(err);
         console.error('!! ERROR reposting');
+        /* when duplicate status, err ==
+        { [Error: Status is a duplicate.]
+          message: 'Status is a duplicate.',
+          statusCode: 403,
+          code: 187,
+          allErrors: [ { code: 187, message: 'Status is a duplicate.' } ],
+          twitterReply: '{"errors":[{"code":187,"message":"Status is a duplicate."}]}' }
+        */
       } else {
         var tweet = new Tweet(tweet_json);
         console.log('posted: ' + tweet.to_string());

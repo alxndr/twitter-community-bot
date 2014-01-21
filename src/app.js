@@ -8,6 +8,8 @@ if (!process.env.TWITTER_CONSUMER_USERNAME) {
   throw new Error('missing TWITTER_CONSUMER_USERNAME in env!');
 }
 
+require('newrelic');
+
 var twit_secrets = {
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
