@@ -42,7 +42,7 @@ TCBot.prototype.should_repost = function(tweet) {
   }
 
   // TODO remove
-  if (tweet.is_by('drwxrxrx')) {
+  if (tweet.tweet_json.text.match(/nope/)) {
     return false;
   }
 
