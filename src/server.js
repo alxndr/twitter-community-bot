@@ -43,31 +43,23 @@ WebServer.prototype.render_home = function(req,res) {
 WebServer.prototype.repost_and_redirect = function(req, res) {
   var tweet = this.tweets_queued[req.params.tweet_id_str];
   delete(this.tweets_queued[req.params.tweet_id_str]);
-  this.repost_queued(tweet);
+  this.approve(tweet);
   res.redirect('/');
 };
 
-WebServer.prototype.repost_queued = function(tweet) {
-  console.log('repost queued ' + tweet.id_str);
+WebServer.prototype.approve = function(tweet) {
+  console.log('approved: ' + tweet.id_str);
   this.emit('tweet_approved', tweet);
   // potential race condition here
   delete(this.tweets_queued[tweet.id_str]);
-  console.log('tweets queued:');
-  console.log(this.tweets_queued_id_strs);
 };
 
 WebServer.prototype.tweet_posted = function(tweet) {
   this.tweets_posted.push(tweet);
-  console.log('tweets posted:');
-  for (var i in this.tweets_posted) {
-    var tweet_posted = this.tweets_posted[i];
-    console.log(tweet_posted.to_string());
-  }
 };
 
 WebServer.prototype.queue_tweet = function(tweet) {
   this.tweets_queued[tweet.id_str] = tweet;
-  console.log(this.tweets_queued_id_strs());
 };
 
 WebServer.prototype.tweets_queued_id_strs = function() {
