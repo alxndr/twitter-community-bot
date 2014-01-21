@@ -38,7 +38,7 @@ Tweet.prototype.to_html = function() {
 // private
 
 Tweet.prototype.is_by = function(name) {
-  return this.username == name;
+  return this.username === name;
 };
 
 Tweet.prototype.determine_url = function() {

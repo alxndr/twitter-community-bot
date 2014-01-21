@@ -9,6 +9,7 @@ exports.config = {
    * Array of application names.
    */
   app_name : ['t-c-b'],
+  laxcomma : true,
   /**
    * Your New Relic license key.
    */
