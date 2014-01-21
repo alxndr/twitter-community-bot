@@ -36,6 +36,10 @@ bot.on('not_posted', function(tweet) {
   webserver.queue_tweet(tweet);
 });
 
+webserver.on('tweet_approved', function(tweet) {
+  bot.repost(tweet);
+});
+
 bot.start();
 webserver.start();
 

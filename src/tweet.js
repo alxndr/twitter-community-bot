@@ -28,9 +28,9 @@ Tweet.prototype.process_text = function(username_regex) {
 Tweet.prototype.to_html = function() {
   var html = [];
   html.push('<span class="tweet">');
-  html.push(  '<span class="date">' + this.tweet_json.created_at.substring(0, 19) + '</span>');
   html.push(  '<span class="user">@' + this.tweet_json.user.screen_name + '</span>');
   html.push(  '<span class="text">' + this.tweet_json.text + '</span>');
+  html.push(  '<span class="date">' + this.tweet_json.created_at.substring(0, 19) + '</span>');
   html.push('</span>');
   return html.join(' ');
 };

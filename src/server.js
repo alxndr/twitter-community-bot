@@ -1,26 +1,52 @@
 var EE = require('events').EventEmitter;
+var express = require('express');
+var exphbs = require('express3-handlebars');
 
 var WebServer = function() {
-  this.express = require('express')();
+  this.app = express();
   this.port = process.env.PORT || 3000;
   this.stuff = '';
   this.tweets_posted = [];
-  this.tweets_queued = [];
+  this.tweets_queued = {};
 };
 
 // extend WebServer with EventEmitter
 WebServer.prototype = new EE();
 
-WebServer.prototype.start = function(yieldd) {
-  this.express.get('/', this.render_root.bind(this));
-  this.express.post('/repost/[:tweet_id_str:]', this.repost_queued.bind(this));
+WebServer.prototype.start = function() {
 
-  this.express.listen(this.port);
+  this.app.use(express.logger());
+  this.app.use(express.static('assets')); // static files... no '/assets' in url
+
+  this.app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+  this.app.set('view engine', 'handlebars');
+
+  //this.app.get('/', this.render_root.bind(this));
+  var self = this;
+  this.app.get('/', function(req,res) {
+    console.log(self.tweets_queued_id_strs());
+    res.render('home', {
+      params: req.params
+      , tweets_queued: self.tweets_queued
+      , tweets_queued_length: self.tweets_queued_id_strs().length
+      , tweets_posted: self.tweets_posted
+    });
+  });
+  //this.app.post('/repost/:tweet_id_str', this.repost_queued.bind(this));
+  this.app.post('/repost/:tweet_id_str', function(req, res) {
+    var tweet = self.tweets_queued[req.params.tweet_id_str];
+    delete(self.tweets_queued[req.params.tweet_id_str]);
+    self.repost_queued(tweet);
+    res.redirect('/');
+  });
+
+  this.app.listen(this.port);
   console.log("Express is running on port " + this.port);
 
   this.started_at = new Date();
 };
 
+/*
 WebServer.prototype.render_root = function(req, res) {
   var html = [];
   html.push('<head>');
@@ -36,11 +62,15 @@ WebServer.prototype.render_root = function(req, res) {
   html.push('</body>');
   res.send('<html>' + html.join('') + '</html>');
 };
+*/
 
-WebServer.prototype.repost_queued = function(req, res) {
-  console.log(req);
-  console.log(res);
-  console.log('repost_queued');
+WebServer.prototype.repost_queued = function(tweet) {
+  console.log('repost queued ' + tweet.id_str);
+  this.emit('tweet_approved', tweet);
+  // potential race condition here
+  delete(this.tweets_queued[tweet.id_str]);
+  console.log('tweets queued:');
+  console.log(this.tweets_queued_id_strs);
 };
 
 WebServer.prototype.tweet_posted = function(tweet) {
@@ -53,14 +83,15 @@ WebServer.prototype.tweet_posted = function(tweet) {
 };
 
 WebServer.prototype.queue_tweet = function(tweet) {
-  this.tweets_queued.push(tweet);
-  console.log('tweets queued:');
-  for (var i in this.tweets_queued) {
-    var tweet_queued = this.tweets_queued[i];
-    console.log(tweet_queued.to_string());
-  }
+  this.tweets_queued[tweet.id_str] = tweet;
+  console.log(this.tweets_queued_id_strs());
 };
 
+WebServer.prototype.tweets_queued_id_strs = function() {
+  return Object.keys(this.tweets_queued);
+};
+
+/*
 WebServer.prototype.content_for = function(where) {
   switch(where) {
     case 'body':
@@ -116,6 +147,7 @@ WebServer.prototype.footer_content = function() {
   html.push('<p>page rendered: ' + new Date().toString() + '</p>');
   return html.join('');
 };
+*/
 
 if (module) {
   module.exports = WebServer;
