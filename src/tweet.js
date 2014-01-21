@@ -42,8 +42,7 @@ Tweet.prototype.is_by = function(name) {
 };
 
 Tweet.prototype.determine_url = function() {
-  var url = 'http://twitter.com/' + this.username + '/status/' + this.id_str;
-  return url;
+  return 'http://twitter.com/' + this.username + '/status/' + this.id_str;
 };
 
 if (module) {

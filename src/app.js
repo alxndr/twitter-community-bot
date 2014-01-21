@@ -15,9 +15,9 @@ var twit_secrets = {
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
-var TCBot = require('./bot.js');
+var TCBot = require('./tcbot.js');
 var Twit = require('twit');
-var WebServer = require('./server.js');
+var WebServer = require('./webserver.js');
 
 var bot = new TCBot({
   T: new Twit(twit_secrets),

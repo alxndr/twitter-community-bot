@@ -1,6 +1,6 @@
 var rewire = require('rewire');
 
-var TCBot = rewire('../src/bot.js');
+var TCBot = rewire('../src/tcbot.js');
 
 describe('TCBot', function() {
   var bot;
