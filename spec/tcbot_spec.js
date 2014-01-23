@@ -66,33 +66,61 @@ describe('TCBot', function() {
   });
 
   describe('#should_repost', function() {
+    var tweet;
     beforeEach(function() {
       bot.own_username = 'foo';
+      tweet = {};
+    });
+    afterEach(function() {
+      delete(tweet);
     });
     describe('when tweet is by self', function() {
-      var tweet;
       beforeEach(function() {
-        tweet = jasmine.createSpyObj('tweet', ['is_by']);
-        tweet.is_by.andReturn(true);
+        tweet.is_by = jasmine.createSpy('is_by').andReturn(true);
       });
       it('should be false', function() {
         expect(bot.should_repost(tweet)).toBeFalsy();
       });
     });
-    describe('when tweet is a native RT', function() {
-      var tweet;
+    describe('when tweet is not by self', function() {
       beforeEach(function() {
-        // not happy about this
-        tweet = jasmine.createSpyObj('tweet', ['is_by', 'is_native_retweet', 'text']);
-        tweet.is_by.andReturn(false);
-        tweet.is_native_retweet.andReturn(true);
-        tweet.text.andReturn('text');
+        tweet.is_by = jasmine.createSpy('is_by').andReturn(false);
+        tweet.text = jasmine.createSpy('is_by').andReturn('');
       });
-      it('should be false', function() {
-        expect(bot.should_repost(tweet)).toBeFalsy();
+      describe('when tweet is a native RT', function() {
+        beforeEach(function() {
+          tweet.is_native_retweet = jasmine.createSpy('is_native_retweet').andReturn(true);
+        });
+        it('should be false', function() {
+          expect(bot.should_repost(tweet)).toBeFalsy();
+        });
+      });
+      describe('when tweet is not RT', function() {
+        beforeEach(function() {
+          tweet.is_native_retweet = jasmine.createSpy('is_native_retweet').andReturn(false);
+        });
+        describe('when thanks', function() {
+          beforeEach(function() {
+            tweet.text = jasmine.createSpy('is_by').andReturn('foo thanks bar');
+          });
+          it('should be false', function() {
+            expect(bot.should_repost(tweet)).toBeFalsy();
+          });
+        });
+        describe('when not thanks', function() {
+          beforeEach(function() {
+            tweet.text = jasmine.createSpy('is_by').andReturn('foo bar');
+          });
+          it('should be true', function() {
+            expect(bot.should_repost(tweet)).toBeTruthy();
+          });
+          it('should allow thanksgiving chatter', function() {
+            tweet.text = jasmine.createSpy('is_by').andReturn('i am thankful that thanksgiving is tasty');
+            expect(bot.should_repost(tweet)).toBeTruthy();
+          });
+        });
       });
     });
-    xdescribe('when thanks');
   });
 
   describe('#repost', function() {

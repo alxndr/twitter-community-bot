@@ -46,13 +46,19 @@ TCBot.prototype.should_repost = function(tweet) {
     return false;
   }
 
+  if (tweet.text().match(/\bthanks\b/i)) {
+    return false;
+  }
+
+  // tweet.in_reply_to_screen_name == this.username
+  // tweet.retweet_count > 0 // n.b.: .retweeted is whether we've RT'd
+
   // TODO remove
   if (tweet.text().match(/nope/)) {
     return false;
   }
 
   // TODO
-  // thanks
   // similar tweets
   // overposts
 
