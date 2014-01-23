@@ -22,6 +22,7 @@ TCBot.prototype.start = function() {
   var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
   console.log('listening for "' + this.term + '"');
   stream.on('tweet', this.term_mentioned.bind(this));
+  stream.on('limit', this.limited.bind(this));
 };
 
 TCBot.prototype.term_mentioned = function(tweet_json) {
@@ -89,6 +90,11 @@ TCBot.prototype.repost = function(tweet) {
       }
     }
   );
+};
+
+TCBot.prototype.limited = function() {
+  console.log('*** DEBUG received limited message from twitter');
+  console.log(arguments);
 };
 
 if (module) {

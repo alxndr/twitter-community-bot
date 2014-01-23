@@ -1,6 +1,7 @@
 /*
 json response for https://twitter.com/drwxrxrx/status/422139517030502401
 as of Jan 2014
+this is good to have around https://dev.twitter.com/docs/platform-objects/tweets
 */
 var tweet_json = {
   created_at: 'Sat Jan 11 22:54:38 +0000 2014',
