@@ -45,7 +45,7 @@ Tweet.prototype.is_native_retweet = function() {
     return true;
   }
   return false;
-}
+};
 
 Tweet.prototype.text = function() {
   return this.tweet_json.text;
