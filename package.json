@@ -18,11 +18,12 @@
     "express": "~3.4.6"
     ,"express3-handlebars": "~0.5"
     ,"jasmine-node": "~1.12"
-    , "newrelic": "*"
+    ,"newrelic": "*"
     ,"twit": "~1.1.11"
   }
   ,"devDependencies": {
-    "node-env-file": "~0.1"
-    , "rewire": "~2.0"
+    "istanbul": "*"
+    ,"node-env-file": "~0.1"
+    ,"rewire": "~2.0"
   }
 }
