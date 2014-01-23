@@ -64,8 +64,17 @@ describe('Tweet', function() {
     it('should return a string with stuff in it', function() {
       var text = tweet.to_string();
       expect(text).toMatch(tweet.username);
-      expect(text).toMatch(tweet.text);
+      expect(text).toMatch(tweet.tweet_json.text);
       // also timestamp
+    });
+  });
+   
+  describe('#text', function() {
+    beforeEach(function() {
+      tweet.tweet_json = {text: 'foo bar'};
+    });
+    it('should return tweet_json.text', function() {
+      expect(tweet.text()).toEqual('foo bar');
     });
   });
 

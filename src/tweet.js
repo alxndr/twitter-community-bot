@@ -35,8 +35,6 @@ Tweet.prototype.to_html = function() {
   return html.join(' ');
 };
 
-// private
-
 Tweet.prototype.is_by = function(name) {
   return this.username === name;
 };
@@ -48,6 +46,12 @@ Tweet.prototype.is_native_retweet = function() {
   }
   return false;
 }
+
+Tweet.prototype.text = function() {
+  return this.tweet_json.text;
+};
+
+// private
 
 Tweet.prototype.determine_url = function() {
   return 'http://twitter.com/' + this.username + '/status/' + this.id_str;

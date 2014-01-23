@@ -83,10 +83,10 @@ describe('TCBot', function() {
       var tweet;
       beforeEach(function() {
         // not happy about this
-        tweet = jasmine.createSpyObj('tweet', ['is_by', 'is_native_retweet']);
+        tweet = jasmine.createSpyObj('tweet', ['is_by', 'is_native_retweet', 'text']);
         tweet.is_by.andReturn(false);
         tweet.is_native_retweet.andReturn(true);
-        tweet.tweet_json = {text:''};
+        tweet.text.andReturn('text');
       });
       it('should be false', function() {
         expect(bot.should_repost(tweet)).toBeFalsy();
