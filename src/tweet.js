@@ -41,6 +41,14 @@ Tweet.prototype.is_by = function(name) {
   return this.username === name;
 };
 
+Tweet.prototype.is_native_retweet = function() {
+  // in_reply_to_status_id_str is for "replies"
+  if (this.retweeted_status) {
+    return true;
+  }
+  return false;
+}
+
 Tweet.prototype.determine_url = function() {
   return 'http://twitter.com/' + this.username + '/status/' + this.id_str;
 };

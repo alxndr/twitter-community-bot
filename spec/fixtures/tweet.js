@@ -51,23 +51,24 @@ var tweet_json = {
     default_profile_image: false,
     following: null,
     follow_request_sent: null,
-    notifications: null },
-    geo: null,
-    coordinates: null,
-    place: null,
-    contributors: null,
-    retweet_count: 0,
-    favorite_count: 0,
-    entities: {
-      hashtags: [],
-      symbols: [],
-      urls: [],
-      user_mentions: [ [Object] ]
-    },
-    favorited: false,
-    retweeted: false,
-    filter_level: 'medium',
-    lang: 'tr'
+    notifications: null
+  },
+  geo: null,
+  coordinates: null,
+  place: null,
+  contributors: null,
+  retweet_count: 0,
+  favorite_count: 0,
+  entities: {
+    hashtags: [],
+    symbols: [],
+    urls: [],
+    user_mentions: [ [Object] ]
+  },
+  favorited: false,
+  retweeted: false,
+  filter_level: 'medium',
+  lang: 'tr'
 };
 
 if (module) {

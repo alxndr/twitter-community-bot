@@ -79,7 +79,19 @@ describe('TCBot', function() {
         expect(bot.should_repost(tweet)).toBeFalsy();
       });
     });
-    xdescribe('when RT');
+    describe('when tweet is a native RT', function() {
+      var tweet;
+      beforeEach(function() {
+        // not happy about this
+        tweet = jasmine.createSpyObj('tweet', ['is_by', 'is_native_retweet']);
+        tweet.is_by.andReturn(false);
+        tweet.is_native_retweet.andReturn(true);
+        tweet.tweet_json = {text:''};
+      });
+      it('should be false', function() {
+        expect(bot.should_repost(tweet)).toBeFalsy();
+      });
+    });
     xdescribe('when thanks');
   });
 

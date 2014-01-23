@@ -40,6 +40,26 @@ describe('Tweet', function() {
     });
   });
 
+  describe('#is_native_retweet', function() {
+    describe('when retweeted_status is present', function() {
+      beforeEach(function() {
+        tweet.retweeted_status = {some:'object'};
+      });
+      it('should return true', function() {
+        expect(tweet.is_native_retweet()).toBeTruthy();
+      });
+    });
+
+    describe('when retweeted_status is not', function() {
+      beforeEach(function() {
+        delete(tweet.retweeted_status);
+      });
+      it('should return false', function() {
+        expect(tweet.is_native_retweet()).toBeFalsy();
+      });
+    });
+  });
+
   describe('#to_string', function() {
     it('should return a string with stuff in it', function() {
       var text = tweet.to_string();

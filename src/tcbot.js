@@ -41,13 +41,16 @@ TCBot.prototype.should_repost = function(tweet) {
     return false;
   }
 
+  if (tweet.is_native_retweet()) {
+    return false;
+  }
+
   // TODO remove
   if (tweet.tweet_json.text.match(/nope/)) {
     return false;
   }
 
   // TODO
-  // retweets
   // thanks
   // similar tweets
   // overposts
