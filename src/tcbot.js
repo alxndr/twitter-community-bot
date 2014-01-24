@@ -52,6 +52,7 @@ TCBot.prototype.should_repost = function(tweet) {
 
   // tweet.in_reply_to_screen_name == this.username
   // tweet.retweet_count > 0 // n.b.: .retweeted is whether we've RT'd
+  // tweet.text().match(/\sRT @\w+/) // non-native RTs
 
   // TODO remove
   if (tweet.text().match(/nope/)) {
