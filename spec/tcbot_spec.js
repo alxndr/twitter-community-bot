@@ -12,12 +12,19 @@ describe('TCBot', function() {
   });
 
   describe('#start', function() {
-    it('should set up a stream', function() {
+    beforeEach(function() {
       bot.T = jasmine.createSpyObj('T', ['stream']);
       bot.T.stream.andReturn({on: jasmine.createSpy('T.stream.on')});
+      bot.db_client = jasmine.createSpyObj('db_client', ['connect', 'query']);
+    });
+    it('should set up a stream', function() {
       bot.start();
       expect(bot.T.stream).toHaveBeenCalled();
       expect(bot.T.stream().on).toHaveBeenCalled();
+    });
+    it('should connect to the db', function() {
+      bot.start();
+      expect(bot.db_client.connect).toHaveBeenCalled();
     });
   });
 

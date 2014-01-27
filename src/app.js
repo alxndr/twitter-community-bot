@@ -20,12 +20,14 @@ var twit_secrets = {
 var TCBot = require('./tcbot.js');
 var Twit = require('twit');
 var WebServer = require('./webserver.js');
+var pg = require('pg').native;
 
 var bot = new TCBot({
   T: new Twit(twit_secrets),
   own_username: process.env.TWITTER_CONSUMER_USERNAME, // no @
   term: process.env.TCB_LISTENING_TERM || '@' + process.env.TWITTER_CONSUMER_USERNAME,
-  mute: process.env.TCB_MUTE
+  mute: process.env.TCB_MUTE,
+  db_client: new pg.Client(process.env.DATABASE_URL || process.env.HEROKU_POSTGRESQL_NAVY_URL)
 });
 
 var webserver = new WebServer();

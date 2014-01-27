@@ -19,6 +19,7 @@
     ,"express3-handlebars": "~0.5"
     ,"jasmine-node": "~1.12"
     ,"newrelic": "*"
+    ,"pg": "*"
     ,"twit": "~1.1.11"
   }
   ,"devDependencies": {

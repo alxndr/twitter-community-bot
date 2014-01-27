@@ -3,12 +3,16 @@ var Tweet = require('./tweet.js');
 
 var TCBot = function(config) {
   this.T = config.T;
+  this.db_client = config.db_client;
   this.own_username = config.own_username;
   this.term = config.term;
   this.mute = config.mute;
-  if (!this.mute) {
+  if (this.mute) {
+    console.log('muted');
+  } else {
     console.log('posting as ' + this.own_username);
   }
+
   this.trim_regex = new RegExp('^\\s*@' + this.own_username + '\\s+');
   console.log('trimming off ' + this.trim_regex);
 
@@ -19,6 +23,21 @@ var TCBot = function(config) {
 TCBot.prototype = new EE();
 
 TCBot.prototype.start = function() {
+  this.db_client.connect();
+
+  this.db_client.query('SELECT NOW() AS "theTime"', function(err, result) {
+    if(err) {
+      return console.error('error running query', err);
+    }
+    console.log('DB is responding ' + result.rows[0].theTime);
+  });
+  this.db_client.query('SELECT COUNT(*) FROM tweets', function(err, result) {
+    if (err) {
+      return console.error('error running query', err);
+    }
+    console.log('tweets in DB: ' + result.rows[0].count);
+  });
+
   var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
   console.log('listening for "' + this.term + '"');
   stream.on('tweet', this.term_mentioned.bind(this));
