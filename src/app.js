@@ -16,18 +16,33 @@ var twit_secrets = {
   access_token: process.env.ACCESS_TOKEN,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
+var db_url = process.env.DATABASE_URL || process.env.HEROKU_POSTGRESQL_NAVY_URL;
 
 var TCBot = require('./tcbot.js');
 var Twit = require('twit');
 var WebServer = require('./webserver.js');
 var pg = require('pg').native;
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize(db_url, { define: { underscored: true, underscore: true } });
+
+// TODO move to models dir
+var Tweet = sequelize.define('tweet', {
+  tweet_id_str: Sequelize.STRING,
+  text: Sequelize.TEXT,
+  author: Sequelize.STRING,
+  json: Sequelize.TEXT //Sequelize.JSON
+});
+var models = {
+  Tweet: Tweet
+};
 
 var bot = new TCBot({
   T: new Twit(twit_secrets),
   own_username: process.env.TWITTER_CONSUMER_USERNAME, // no @
   term: process.env.TCB_LISTENING_TERM || '@' + process.env.TWITTER_CONSUMER_USERNAME,
   mute: process.env.TCB_MUTE,
-  db_client: new pg.Client(process.env.DATABASE_URL || process.env.HEROKU_POSTGRESQL_NAVY_URL)
+  db_client: new pg.Client(db_url),
+  models: models
 });
 
 var webserver = new WebServer();

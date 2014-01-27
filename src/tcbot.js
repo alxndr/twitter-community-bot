@@ -3,6 +3,7 @@ var Tweet = require('./tweet.js');
 
 var TCBot = function(config) {
   this.T = config.T;
+  this.models = config.models;
   this.db_client = config.db_client;
   this.own_username = config.own_username;
   this.term = config.term;
@@ -15,8 +16,6 @@ var TCBot = function(config) {
 
   this.trim_regex = new RegExp('^\\s*@' + this.own_username + '\\s+');
   console.log('trimming off ' + this.trim_regex);
-
-  this.tweet_queue = [];
 };
 
 // extend TCBot with EventEmitter
@@ -52,6 +51,15 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
     this.repost(tweet);
   } else {
     this.emit('not_posted', tweet);
+    console.log('building model...');
+    var tweet_record = this.models.Tweet.build({
+      tweet_id_str: tweet_json.id_str,
+      text: tweet_json.text,
+      author: tweet.username,
+      json: tweet_json
+    });
+    console.log('built ' + tweet_record.dataValues.text);
+    tweet_record.save();
   }
 };
 
