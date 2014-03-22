@@ -15,11 +15,11 @@
     "node": "0.10.x"
   }
   ,"dependencies": {
-    "express": "~3.4.6"
+    "express": "~3.5"
     ,"express3-handlebars": "~0.5"
-    ,"jasmine-node": "~1.12"
+    ,"jasmine-node": "~1.14"
     ,"newrelic": "*"
-    ,"twit": "~1.1.11"
+    ,"twit": "~1.1"
   }
   ,"devDependencies": {
     "istanbul": "*"
