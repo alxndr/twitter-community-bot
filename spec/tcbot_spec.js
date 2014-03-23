@@ -145,9 +145,6 @@ describe('TCBot', function() {
           it('should temporarily always be false', function() {
             expect(bot.should_repost(tweet)).toBeFalsy();
           });
-          xit('should be true', function() {
-            expect(bot.should_repost(tweet)).toBeTruthy();
-          });
           xit('should allow thanksgiving chatter', function() {
             tweet.text = jasmine.createSpy('is_by').andReturn('i am thankful that thanksgiving is tasty');
             expect(bot.should_repost(tweet)).toBeTruthy();
@@ -177,26 +174,31 @@ describe('TCBot', function() {
     });
 
     describe('when not mute', function() {
+      var tweet;
+
       beforeEach(function() {
         delete(bot.mute);
-      });
-      it('should process text', function() {
-        var tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
+        tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
         tweet.process_text.andReturn('foo bar');
+      });
+      afterEach(function() {
+        delete tweet;
+      });
+
+      it('should process text', function() {
         bot.repost(tweet);
+
         expect(tweet.process_text).toHaveBeenCalledWith(bot.trim_regex);
       });
+
       it('should post', function() {
-        var tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
-        tweet.process_text.andReturn('foo bar');
         bot.repost(tweet);
-        expect(bot.T.post).toHaveBeenCalledWith(
-          'statuses/update',
-          { status: 'foo bar' },
-          jasmine.any(Function)
-        );
+
+        expect(bot.T.post).toHaveBeenCalledWith( 'statuses/update', { status: 'foo bar' }, jasmine.any(Function));
       });
+
       xdescribe('with a callback', function() {
+        // pending... split out T.post handler
       });
     });
   });

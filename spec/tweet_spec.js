@@ -1,3 +1,6 @@
+/* global require, describe, it, expect, spyOn, beforeEach, afterEach */
+/* jshint -W051 */
+
 var Tweet = require('../src/tweet.js');
 var tweet_json = require('./fixtures/tweet.js');
 
@@ -13,6 +16,25 @@ describe('Tweet', function() {
   describe('.url', function() {
     it('should exist', function() {
       expect(tweet.url).toEqual('http://twitter.com/drwxrxrx/status/422139517030502401');
+    });
+  });
+
+  describe('#data_for_db', function() {
+    beforeEach(function() {
+      spyOn(tweet, 'get_id_str').andReturn('a tweet id');
+      spyOn(tweet, 'get_author').andReturn('@username');
+      spyOn(tweet, 'text').andReturn('140 chars');
+      spyOn(tweet, 'get_date').andReturn('nowish');
+      tweet.tweet_json = {};
+    });
+    it('should return an object that matches our TweetModel schema', function() {
+      expect(tweet.data_for_db()).toEqual({
+        tweet_id_str: 'a tweet id',
+        author: '@username',
+        text: '140 chars',
+        tweet_date: 'nowish',
+        original_tweet_json: {}
+      });
     });
   });
 
@@ -68,7 +90,7 @@ describe('Tweet', function() {
       // also timestamp
     });
   });
-   
+
   describe('#text', function() {
     beforeEach(function() {
       tweet.tweet_json = {text: 'foo bar'};
@@ -99,6 +121,5 @@ describe('Tweet', function() {
       });
     });
   });
-
 
 });
