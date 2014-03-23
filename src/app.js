@@ -18,13 +18,14 @@ var twit_secrets = {
   access_token: process.env.ACCESS_TOKEN,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
+var mongo_db_url = process.env.MONGOHQ_URL || 'mongodb://localhost/twitter_community_bot';
 
 var TCBot = require('./tcbot.js');
 var Twit = require('twit');
 var WebServer = require('./webserver.js');
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/twitter_community_bot');
+mongoose.connect(mongo_db_url);
 var tweet_schema = mongoose.Schema({
   tweet_id_str: String,
   author: String,
