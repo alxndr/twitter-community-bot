@@ -18,7 +18,7 @@ var WebServer = function(config) {
   this.define_routes();
 };
 
-// extend WebServer with EventEmitter
+// extend WebServer with EventEmitter. TODO mixin instead of set prototype?
 WebServer.prototype = new EE();
 
 WebServer.prototype.define_routes = function() {

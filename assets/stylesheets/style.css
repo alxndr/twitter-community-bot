@@ -1,11 +1,14 @@
+/* TODO: sass */
+
 * { font-family: sans-serif; }
 
 h1 { margin-bottom: 0; }
 p { margin-top: 0; }
 ul { margin: 0 0 2em; padding: 0; overflow: auto; }
-li { clear: left; list-style: none; }
+li { clear: left; margin-bottom: 1em; list-style: none; }
 li form { float: left; }
 
+button[type='submit'] { color: blue; font-weight: bold; }
 .tweet { }
 .tweet .user { }
 .tweet .user:after { content: ' wrote:'; }
