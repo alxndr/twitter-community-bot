@@ -21,13 +21,6 @@ var WebServer = function(config) {
 // extend WebServer with EventEmitter. TODO mixin instead of set prototype?
 WebServer.prototype = new EE();
 
-WebServer.prototype.define_routes = function() {
-  // TODO abstract this a little
-  this.app.get( '/',                     this.render_home.bind(this));
-  this.app.get( '/tweets',               this.all_tweets.bind(this));
-  this.app.post('/repost/:tweet_id_str', this.repost_and_redirect.bind(this));
-};
-
 WebServer.prototype.all_tweets = function(request, response) {
   return this.TweetModel.find(function(err, tweets) {
     if (err) {
@@ -37,20 +30,23 @@ WebServer.prototype.all_tweets = function(request, response) {
   });
 };
 
-WebServer.prototype.start = function() {
-  // express config
-  this.app.use(express.logger());
-  this.app.use(express.static('assets')); // static files... no '/assets' in url
+WebServer.prototype.approve = function(tweet, callback) {
+  console.log('emitting approved message', tweet.to_string());
+  this.emit('tweet_approved', tweet, callback);
+};
 
-  // view templates
-  this.app.engine('handlebars', exphbs({defaultLayout: 'main'}));
-  this.app.set('view engine', 'handlebars');
+WebServer.prototype.define_routes = function() {
+  // TODO abstract this a little
+  this.app.get( '/',                     this.render_home.bind(this));
+  this.app.get( '/tweets',               this.all_tweets.bind(this));
+  this.app.post('/repost/:tweet_id_str', this.repost_and_redirect.bind(this));
+};
 
-  // fire it up
-  this.app.listen(this.port);
-  console.log("Express is running on port " + this.port);
-
-  this.started_at = new Date();
+WebServer.prototype.record_to_tweet_instance = function(tweet) {
+  if (tweet && tweet.original_tweet_json) {
+    return new Tweet(tweet.original_tweet_json);
+  }
+  console.error('WebServer#record_to_tweet_instance: tweet missing original_tweet_json',tweet);
 };
 
 WebServer.prototype.render_home = function(req,res) {
@@ -72,26 +68,6 @@ WebServer.prototype.render_home = function(req,res) {
   });
 };
 
-WebServer.prototype.update_queued_tweets = function(callback) {
-  var self = this;
-  this.TweetModel.find(function(err, tweets) {
-    if (err) {
-      return console.log('error', err, tweets);
-    }
-    self.queued_tweets = tweets.map(self.record_to_tweet_instance.bind(this));
-    console.log('found tweets in db:', self.queued_tweets.map(function(tweet) { return tweet.to_string(); }));
-    callback();
-    return tweets;
-  });
-};
-
-WebServer.prototype.record_to_tweet_instance = function(tweet) {
-  if (tweet && tweet.original_tweet_json) {
-    return new Tweet(tweet.original_tweet_json);
-  }
-  console.error('WebServer#record_to_tweet_instance: tweet missing original_tweet_json',tweet);
-};
-
 WebServer.prototype.repost_and_redirect = function(req, res) {
   var self = this;
   this.TweetModel.findOne({tweet_id_str: req.params.tweet_id_str}, function(err, tweet_from_db) {
@@ -107,9 +83,33 @@ WebServer.prototype.repost_and_redirect = function(req, res) {
   });
 };
 
-WebServer.prototype.approve = function(tweet, callback) {
-  console.log('emitting approved message', tweet.to_string());
-  this.emit('tweet_approved', tweet, callback);
+WebServer.prototype.start = function() {
+  // express config
+  this.app.use(express.logger());
+  this.app.use(express.static('assets')); // static files... no '/assets' in url
+
+  // view templates
+  this.app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+  this.app.set('view engine', 'handlebars');
+
+  // fire it up
+  this.app.listen(this.port);
+  console.log("Express is running on port " + this.port);
+
+  this.started_at = new Date();
+};
+
+WebServer.prototype.update_queued_tweets = function(callback) {
+  var self = this;
+  this.TweetModel.find(function(err, tweets) {
+    if (err) {
+      return console.log('error', err, tweets);
+    }
+    self.queued_tweets = tweets.map(self.record_to_tweet_instance.bind(this));
+    console.log('found tweets in db:', self.queued_tweets.map(function(tweet) { return tweet.to_string(); }));
+    callback();
+    return tweets;
+  });
 };
 
 if (module) {
