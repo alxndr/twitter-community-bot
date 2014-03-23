@@ -34,6 +34,11 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
   var tweet = new Tweet(tweet_json);
   console.log('heard: ' + tweet.to_string());
 
+  if (tweet.is_by(this.own_username)) {
+    console.log('found tweet by self; skipping', tweet.to_string());
+    return false;
+  }
+
   if (this.should_repost(tweet)) {
     this.repost(tweet);
   } else {
@@ -42,8 +47,7 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
 };
 
 TCBot.prototype.should_repost = function(tweet) {
-  if (tweet.is_by(this.own_username)) {
-    // TODO be nice to have twit/twitter filter us out for us
+  if (tweet.is_by(this.own_username)) { // sanity check
     return false;
   }
 
@@ -67,48 +71,58 @@ TCBot.prototype.should_repost = function(tweet) {
   return false; // short-circuit to queue everything
 };
 
-TCBot.prototype.repost = function(tweet) {
-  // will emit 'posted' on success
+TCBot.prototype.repost = function(tweet, callback) { // tweet should be JS Tweet instance
+  // will emit 'posted' on success or dupe tweet error
+  // TODO need a transaction or something
   var self = this;
+  console.log('reposting',tweet.to_string());
   if (this.mute) {
     console.log('MUTE');
-    this.emit('posted', tweet);
+    this.emit('posted', tweet.to_string());
     return;
   }
   var text = tweet.process_text(this.trim_regex);
   this.T.post(
     'statuses/update',
     { status: text },
-    function(err, tweet_json) {
+    function(err) {
       if (err) {
-        console.error(err);
-        console.error('!! ERROR reposting');
-        /* when duplicate status, err ==
-        { [Error: Status is a duplicate.]
-          message: 'Status is a duplicate.',
-          statusCode: 403,
-          code: 187,
-          allErrors: [ { code: 187, message: 'Status is a duplicate.' } ],
-          twitterReply: '{"errors":[{"code":187,"message":"Status is a duplicate."}]}' }
-        */
+        if (err.message === 'Status is a duplicate.') {
+          console.log('deleting db entry, twitter says is a duplicate');
+          self.remove_and_emit.call(self, tweet);
+        } else {
+          console.error(err);
+          console.error('!! ERROR reposting');
+        }
       } else {
-        var tweet = new Tweet(tweet_json);
         console.log('posted: ' + tweet.to_string());
-        self.emit('posted', tweet);
+        self.remove_and_emit.call(self, tweet);
+      }
+      if (callback && typeof callback === 'function') {
+        callback();
       }
     }
   );
 };
 
+TCBot.prototype.remove_and_emit = function(tweet) {
+  console.log('TCBot#remove_and_emit',tweet.to_string());
+  var self = this;
+  this.TweetModel.findOneAndRemove({tweet_id_str: tweet.id_str}, function(err, result) { // jshint unused: false
+    //console.log(result);
+    console.log('removed tweet');
+    self.emit('posted', tweet);
+  });
+};
+
 TCBot.prototype.queue = function(tweet) {
   // will emit 'queued' on success
   var self = this;
-  console.log('going to make model out of',tweet.data_for_db());
+  console.log('queueing:',tweet.to_string());
   var tweet_model = new this.TweetModel(tweet.data_for_db());
-  console.log('trying to save...',tweet_model);
   tweet_model.save(function() {
     console.log('saved');
-    self.emit('queued', tweet);
+    self.emit('queued');
   });
 };
 

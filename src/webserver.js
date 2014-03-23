@@ -22,29 +22,31 @@ var WebServer = function(config) {
 WebServer.prototype = new EE();
 
 WebServer.prototype.define_routes = function() {
-  var self = this;
-  this.app.get('/tweets', function(request, response) {
-    return self.TweetModel.find(function(err, tweets) {
-      if (err) {
-        return console.log('error: ',err);
-      }
-      return response.send(tweets);
-    });
+  // TODO abstract this a little
+  this.app.get( '/',                     this.render_home.bind(this));
+  this.app.get( '/tweets',               this.all_tweets.bind(this));
+  this.app.post('/repost/:tweet_id_str', this.repost_and_redirect.bind(this));
+};
+
+WebServer.prototype.all_tweets = function(request, response) {
+  return this.TweetModel.find(function(err, tweets) {
+    if (err) {
+      return console.log('error: ',err);
+    }
+    return response.send(tweets);
   });
 };
 
 WebServer.prototype.start = function() {
-
+  // express config
   this.app.use(express.logger());
   this.app.use(express.static('assets')); // static files... no '/assets' in url
 
+  // view templates
   this.app.engine('handlebars', exphbs({defaultLayout: 'main'}));
   this.app.set('view engine', 'handlebars');
 
-  this.app.get('/', this.render_home.bind(this));
-
-  this.app.post('/repost/:tweet_id_str', this.repost_and_redirect.bind(this));
-
+  // fire it up
   this.app.listen(this.port);
   console.log("Express is running on port " + this.port);
 
@@ -76,39 +78,39 @@ WebServer.prototype.update_queued_tweets = function(callback) {
     if (err) {
       return console.log('error', err, tweets);
     }
-    console.log('found tweets', tweets);
-    self.queued_tweets = tweets.map(function(tweet) {
-      if (tweet && tweet.original_tweet_json) {
-        return new Tweet(tweet.original_tweet_json);
-      }
-    });
+    self.queued_tweets = tweets.map(self.record_to_tweet_instance.bind(this));
+    console.log('found tweets in db:', self.queued_tweets.map(function(tweet) { return tweet.to_string(); }));
     callback();
     return tweets;
   });
 };
 
-WebServer.prototype.repost_and_redirect = function(_req, _res) { // jshint unused: false
-  // should get folded in to #approve?
-  throw new Error('not here yet');
-  /*
-  var tweet = this.tweets_queued[req.params.tweet_id_str];
-  delete(this.tweets_queued[req.params.tweet_id_str]);
-  this.approve(tweet);
-  res.redirect('/');
-  */
+WebServer.prototype.record_to_tweet_instance = function(tweet) {
+  if (tweet && tweet.original_tweet_json) {
+    return new Tweet(tweet.original_tweet_json);
+  }
+  console.error('WebServer#record_to_tweet_instance: tweet missing original_tweet_json',tweet);
 };
 
-WebServer.prototype.approve = function(tweet) { // jshint unused: false
-  // find tweet in db
-  // attempt repost
-  // if successful, remove from db
-  throw new Error('not here yet');
-  /*
-  console.log('approved: ' + tweet.id_str);
-  this.emit('tweet_approved', tweet);
-  // potential race condition here
-  delete(this.tweets_queued[tweet.id_str]);
-  */
+WebServer.prototype.repost_and_redirect = function(req, res) {
+  var self = this;
+  this.TweetModel.findOne({tweet_id_str: req.params.tweet_id_str}, function(err, tweet_from_db) {
+    console.log('db find ' + req.params.tweet_id_str, tweet_from_db);
+    if (!tweet_from_db) {
+      throw new Error('tweet not found with tweet_id_str:' + req.params.tweet_id_str);
+    }
+    var tweet = self.record_to_tweet_instance(tweet_from_db);
+    console.log('approving:',tweet.to_string());
+    self.approve(tweet, function() {
+      console.log('redirecting to /');
+      res.redirect('/');
+    });
+  });
+};
+
+WebServer.prototype.approve = function(tweet, callback) {
+  console.log('emitting approved message', tweet.to_string());
+  this.emit('tweet_approved', tweet, callback);
 };
 
 if (module) {

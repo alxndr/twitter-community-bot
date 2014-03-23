@@ -63,8 +63,9 @@ bot.on('not_posted', function(tweet) {
 });
 */
 
-webserver.on('tweet_approved', function(tweet) {
-  bot.repost(tweet);
+webserver.on('tweet_approved', function(tweet, callback) {
+  console.log('app heard tweet_approved, telling bot to repost');
+  bot.repost(tweet, callback);
 });
 
 bot.start();
