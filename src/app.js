@@ -1,5 +1,7 @@
 /* global process, require, console */
 
+require('newrelic');
+
 if (!process.env.TWITTER_CONSUMER_KEY) {
   var env = require('node-env-file');
   env('./.env');
@@ -9,8 +11,6 @@ if (!process.env.TWITTER_CONSUMER_USERNAME) {
   console.error(process.env);
   throw new Error('missing TWITTER_CONSUMER_USERNAME in env!');
 }
-
-require('newrelic');
 
 var twit_secrets = {
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -30,14 +30,12 @@ var tweet_schema = mongoose.Schema({
   author: String,
   text: String,
   tweet_date: Date,
-  tweet_json: String
+  original_tweet_json: Object
 });
 var TweetModel = mongoose.model('Tweet', tweet_schema);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'db connection error:'));
-db.once('open', function() {
-  console.log('db connection opened ok');
-});
+db.once('open', function() { console.log('db connection opened ok'); });
 
 var bot = new TCBot({
   db: db,

@@ -78,8 +78,8 @@ WebServer.prototype.update_queued_tweets = function(callback) {
     }
     console.log('found tweets', tweets);
     self.queued_tweets = tweets.map(function(tweet) {
-      if (tweet && tweet.tweet_json) {
-        return new Tweet(tweet.tweet_json);
+      if (tweet && tweet.original_tweet_json) {
+        return new Tweet(tweet.original_tweet_json);
       }
     });
     callback();
@@ -87,7 +87,8 @@ WebServer.prototype.update_queued_tweets = function(callback) {
   });
 };
 
-WebServer.prototype.repost_and_redirect = function(req, res) {
+WebServer.prototype.repost_and_redirect = function(_req, _res) { // jshint unused: false
+  // should get folded in to #approve?
   throw new Error('not here yet');
   /*
   var tweet = this.tweets_queued[req.params.tweet_id_str];
@@ -97,7 +98,10 @@ WebServer.prototype.repost_and_redirect = function(req, res) {
   */
 };
 
-WebServer.prototype.approve = function(tweet) {
+WebServer.prototype.approve = function(tweet) { // jshint unused: false
+  // find tweet in db
+  // attempt repost
+  // if successful, remove from db
   throw new Error('not here yet');
   /*
   console.log('approved: ' + tweet.id_str);

@@ -1,3 +1,5 @@
+/* global module */
+
 // TODO convert to revealing module pattern
 
 var Tweet = function(tweet_json) {
@@ -47,6 +49,16 @@ Tweet.prototype.is_native_retweet = function() {
     return true;
   }
   return false;
+};
+
+Tweet.prototype.data_for_db = function() {
+  return {
+    tweet_id_str: this.get_id_str(),
+    author: this.get_author(),
+    text: this.text(),
+    tweet_date: this.get_date(),
+    original_tweet_json: this.tweet_json
+  };
 };
 
 Tweet.prototype.text = function() {

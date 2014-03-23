@@ -42,8 +42,6 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
 };
 
 TCBot.prototype.should_repost = function(tweet) {
-  return false; // short-circuit to queue everything
-
   if (tweet.is_by(this.own_username)) {
     // TODO be nice to have twit/twitter filter us out for us
     return false;
@@ -64,9 +62,9 @@ TCBot.prototype.should_repost = function(tweet) {
   // TODO
   // similar tweets
   // overposts
-  // "thanks"
+  // keep track of why something was blocked?
 
-  return true;
+  return false; // short-circuit to queue everything
 };
 
 TCBot.prototype.repost = function(tweet) {
@@ -103,20 +101,14 @@ TCBot.prototype.repost = function(tweet) {
 };
 
 TCBot.prototype.queue = function(tweet) {
-  // will emit 'not_posted' on success
+  // will emit 'queued' on success
   var self = this;
-  var tweet_model = new this.TweetModel({
-    // TODO move generation of this config obj into Tweet constructor
-    tweet_id_str: tweet.get_id_str(),
-    author: tweet.get_author(),
-    text: tweet.text(),
-    tweet_date: tweet.get_date(),
-    tweet_json: tweet
-  });
+  console.log('going to make model out of',tweet.data_for_db());
+  var tweet_model = new this.TweetModel(tweet.data_for_db());
   console.log('trying to save...',tweet_model);
   tweet_model.save(function() {
     console.log('saved');
-    self.emit('not_posted', tweet);
+    self.emit('queued', tweet);
   });
 };
 
