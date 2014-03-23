@@ -44,6 +44,30 @@ describe('Tweet', function() {
     });
   });
 
+  describe('#get_author', function() {
+    it('pulls .tweet_json.user.screen_name', function() {
+      tweet.tweet_json = { user: { screen_name: 'foo' } };
+
+      expect(tweet.get_author()).toEqual('foo');
+    });
+  });
+
+  describe('#get_date', function() {
+    it('pulls .tweet_json.created_at', function() {
+      tweet.tweet_json = { created_at: 'now' };
+
+      expect(tweet.get_date()).toEqual('now');
+    });
+  });
+
+  describe('#get_id_str', function() {
+    it('pulls .tweet_json.id_str', function() {
+      tweet.tweet_json = { id_str: 'a tweet id' };
+
+      expect(tweet.get_id_str()).toEqual('a tweet id');
+    });
+  });
+
   describe('#is_by', function() {
     beforeEach(function() {
       tweet.username = 'foo';
