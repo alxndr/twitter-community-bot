@@ -58,11 +58,11 @@ Tweet.prototype.get_id_str= function() {
 };
 
 Tweet.prototype.get_author = function() {
-  return this.tweet_json.author;
+  return this.tweet_json.user.screen_name;
 };
 
 Tweet.prototype.get_date = function() {
-  return this.tweet_json.date;
+  return this.tweet_json.created_at;
 };
 
 // private

@@ -1,3 +1,5 @@
+/* global require, console, module */
+
 var EE = require('events').EventEmitter;
 var Tweet = require('./tweet.js');
 
@@ -101,16 +103,19 @@ TCBot.prototype.repost = function(tweet) {
 };
 
 TCBot.prototype.queue = function(tweet) {
+  // will emit 'not_posted' on success
   var self = this;
   var tweet_model = new this.TweetModel({
     // TODO move generation of this config obj into Tweet constructor
     tweet_id_str: tweet.get_id_str(),
     author: tweet.get_author(),
     text: tweet.text(),
-    tweet_date: tweet.get_date()
+    tweet_date: tweet.get_date(),
+    tweet_json: tweet
   });
   console.log('trying to save...',tweet_model);
   tweet_model.save(function() {
+    console.log('saved');
     self.emit('not_posted', tweet);
   });
 };
