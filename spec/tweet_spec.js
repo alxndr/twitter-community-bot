@@ -82,24 +82,6 @@ describe('Tweet', function() {
     });
   });
 
-  describe('#to_string', function() {
-    it('should return a string with stuff in it', function() {
-      var text = tweet.to_string();
-      expect(text).toMatch(tweet.username);
-      expect(text).toMatch(tweet.tweet_json.text);
-      // also timestamp
-    });
-  });
-
-  describe('#text', function() {
-    beforeEach(function() {
-      tweet.tweet_json = {text: 'foo bar'};
-    });
-    it('should return tweet_json.text', function() {
-      expect(tweet.text()).toEqual('foo bar');
-    });
-  });
-
   describe('#process_text', function() {
     var processed;
     beforeEach(function() {
@@ -119,6 +101,24 @@ describe('Tweet', function() {
       it('should truncate with link', function() {
         expect(tweet.process_text(/foo/)).toEqual('{@drwxrxrx} Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov l… link: http://twitter.com/drwxrxrx/status/422139517030502401');
       });
+    });
+  });
+
+  describe('#text', function() {
+    beforeEach(function() {
+      tweet.tweet_json = {text: 'foo bar'};
+    });
+    it('should return tweet_json.text', function() {
+      expect(tweet.text()).toEqual('foo bar');
+    });
+  });
+
+  describe('#to_string', function() {
+    it('should return a string with stuff in it', function() {
+      var text = tweet.to_string();
+      expect(text).toMatch(tweet.username);
+      expect(text).toMatch(tweet.tweet_json.text);
+      // also timestamp
     });
   });
 
