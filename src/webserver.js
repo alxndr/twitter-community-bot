@@ -31,7 +31,6 @@ WebServer.prototype.all_tweets = function(request, response) {
 };
 
 WebServer.prototype.approve = function(tweet, callback) {
-  console.log('emitting approved message', tweet.to_string());
   this.emit('tweet_approved', tweet, callback);
 };
 

@@ -25,9 +25,7 @@ describe('TCBot', function() {
 
   describe('#term_mentioned', function() {
     beforeEach(function() {
-      TCBot.__set__({
-        Tweet : jasmine.createSpy('Tweet spy')
-      });
+      TCBot.__set__({ Tweet : jasmine.createSpy('Tweet spy') });
     });
     afterEach(function() {
       delete(TCBot);
