@@ -21,7 +21,23 @@ var TCBot = require('./tcbot.js');
 var Twit = require('twit');
 var WebServer = require('./webserver.js');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/twitter_community_bot');
+var TweetModel = mongoose.model('Tweet', new mongoose.Schema({
+  tweet_id_str: String,
+  author: String,
+  text: String,
+  tweet_date: Date
+}));
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'db connection error:'));
+db.once('open', function() {
+  console.log('db connection opened ok');
+});
+
 var bot = new TCBot({
+  db: db,
+  TweetModel: TweetModel,
   T: new Twit(twit_secrets),
   own_username: process.env.TWITTER_CONSUMER_USERNAME, // no @
   term: process.env.TCB_LISTENING_TERM || '@' + process.env.TWITTER_CONSUMER_USERNAME,
@@ -29,6 +45,8 @@ var bot = new TCBot({
 });
 
 var webserver = new WebServer({
+  db: db,
+  TweetModel: TweetModel,
   listening_for: bot.term,
   posting_as: bot.own_username
 });

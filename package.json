@@ -18,6 +18,7 @@
     "express": "~3.5"
     ,"express3-handlebars": "~0.5"
     ,"jasmine-node": "~1.14"
+    ,"mongoose": "*"
     ,"newrelic": "*"
     ,"twit": "~1.1"
   }

@@ -1,3 +1,5 @@
+// TODO convert to revealing module pattern
+
 var Tweet = function(tweet_json) {
   this.tweet_json = tweet_json;
   this.id_str = this.tweet_json.id_str; // number is too big for js ints
@@ -49,6 +51,18 @@ Tweet.prototype.is_native_retweet = function() {
 
 Tweet.prototype.text = function() {
   return this.tweet_json.text;
+};
+
+Tweet.prototype.get_id_str= function() {
+  return this.tweet_json.id_str;
+};
+
+Tweet.prototype.get_author = function() {
+  return this.tweet_json.author;
+};
+
+Tweet.prototype.get_date = function() {
+  return this.tweet_json.date;
 };
 
 // private

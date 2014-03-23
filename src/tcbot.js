@@ -2,6 +2,9 @@ var EE = require('events').EventEmitter;
 var Tweet = require('./tweet.js');
 
 var TCBot = function(config) {
+  this.db = config.db;
+  this.TweetModel = config.TweetModel;
+
   this.T = config.T;
   this.own_username = config.own_username;
   this.term = config.term;
@@ -9,8 +12,8 @@ var TCBot = function(config) {
   if (!this.mute) {
     console.log('posting as ' + this.own_username);
   }
+
   this.trim_regex = new RegExp('^\\s*@' + this.own_username + '\\s+');
-  console.log('trimming off ' + this.trim_regex);
 
   this.tweet_queue = [];
 };
@@ -32,11 +35,13 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
   if (this.should_repost(tweet)) {
     this.repost(tweet);
   } else {
-    this.emit('not_posted', tweet);
+    this.queue(tweet);
   }
 };
 
 TCBot.prototype.should_repost = function(tweet) {
+  return false; // short-circuit to queue everything
+
   if (tweet.is_by(this.own_username)) {
     // TODO be nice to have twit/twitter filter us out for us
     return false;
@@ -54,20 +59,16 @@ TCBot.prototype.should_repost = function(tweet) {
   // tweet.retweet_count > 0 // n.b.: .retweeted is whether we've RT'd
   // tweet.text().match(/\sRT @\w+/) // non-native RTs
 
-  // TODO remove
-  if (tweet.text().match(/nope/)) {
-    return false;
-  }
-
   // TODO
   // similar tweets
   // overposts
+  // "thanks"
 
   return true;
 };
 
 TCBot.prototype.repost = function(tweet) {
-  // will emit 'posted'
+  // will emit 'posted' on success
   var self = this;
   if (this.mute) {
     console.log('MUTE');
@@ -97,6 +98,21 @@ TCBot.prototype.repost = function(tweet) {
       }
     }
   );
+};
+
+TCBot.prototype.queue = function(tweet) {
+  var self = this;
+  var tweet_model = new this.TweetModel({
+    // TODO move generation of this config obj into Tweet constructor
+    tweet_id_str: tweet.get_id_str(),
+    author: tweet.get_author(),
+    text: tweet.text(),
+    tweet_date: tweet.get_date()
+  });
+  console.log('trying to save...',tweet_model);
+  tweet_model.save(function() {
+    self.emit('not_posted', tweet);
+  });
 };
 
 TCBot.prototype.limited = function() {
