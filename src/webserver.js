@@ -95,7 +95,6 @@ WebServer.prototype.record_to_tweet_instance = function(tweet) {
 WebServer.prototype.repost_and_redirect = function(req, res) {
   var self = this;
   this.TweetModel.findOne({tweet_id_str: req.params.tweet_id_str}, function(err, tweet_from_db) {
-    console.log('db find ' + req.params.tweet_id_str, tweet_from_db);
     if (!tweet_from_db) {
       throw new Error('tweet not found with tweet_id_str:' + req.params.tweet_id_str);
     }

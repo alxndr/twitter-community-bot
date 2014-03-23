@@ -1,5 +1,7 @@
-var rewire = require('rewire');
+/* global require, jasmine, spyOn, describe, it, expect, beforeEach, afterEach, xdescribe, xit */
+/* jshint -W051 */
 
+var rewire = require('rewire');
 var TCBot = rewire('../src/tcbot.js');
 
 describe('TCBot', function() {
@@ -26,41 +28,70 @@ describe('TCBot', function() {
       TCBot.__set__({
         Tweet : jasmine.createSpy('Tweet spy')
       });
-      TCBot.__get__('Tweet').andReturn({
-        to_string: function(){}
-      });
     });
     afterEach(function() {
       delete(TCBot);
     });
 
-    describe('when we can repost', function() {
+    describe('when by ourself', function() {
       beforeEach(function() {
-        spyOn(bot, 'should_repost').andReturn(true);
+        TCBot.__get__('Tweet').andReturn({
+          to_string: jasmine.createSpy('Tweet#to_string'),
+          is_by: function() { return true; }
+        });
+        spyOn(bot, 'should_repost');
         spyOn(bot, 'repost');
+        spyOn(bot, 'queue');
       });
-      it('should create a tweet object', function() {
+      it('should not do anything', function() {
         bot.term_mentioned();
-        expect(TCBot.__get__('Tweet')).toHaveBeenCalled();
-      });
-      it('should call repost', function() {
-        bot.term_mentioned();
-        expect(bot.repost).toHaveBeenCalled();
+
+        expect(bot.should_repost).not.toHaveBeenCalled();
+        expect(bot.repost).not.toHaveBeenCalled();
+        expect(bot.queue).not.toHaveBeenCalled();
       });
     });
 
-    describe('when we cannot repost', function() {
+    describe('when not by ourself', function() {
       beforeEach(function() {
-        spyOn(bot, 'should_repost').andReturn(false);
+        TCBot.__get__('Tweet').andReturn({
+          is_by: function() { return false; },
+          to_string: function() {},
+          data_for_db: function() {}
+        });
+        spyOn(bot, 'should_repost');
+        spyOn(bot, 'repost');
+        spyOn(bot, 'queue');
       });
+
       it('should create a tweet object', function() {
         bot.term_mentioned();
+
         expect(TCBot.__get__('Tweet')).toHaveBeenCalled();
       });
-      it('should not call repost', function() {
-        spyOn(bot, 'repost');
-        bot.term_mentioned();
-        expect(bot.repost).not.toHaveBeenCalled();
+
+      describe('when we can repost', function() {
+        beforeEach(function() {
+          bot.should_repost.andReturn(true);
+        });
+        it('should call repost', function() {
+          bot.term_mentioned();
+
+          expect(bot.repost).toHaveBeenCalled();
+          expect(bot.queue).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when we cannot repost', function() {
+        beforeEach(function() {
+          bot.should_repost.andReturn(false);
+        });
+        it('should queue the tweet', function() {
+          bot.term_mentioned();
+
+          expect(bot.repost).not.toHaveBeenCalled();
+          expect(bot.queue).toHaveBeenCalled();
+        });
       });
     });
   });
@@ -111,10 +142,13 @@ describe('TCBot', function() {
           beforeEach(function() {
             tweet.text = jasmine.createSpy('is_by').andReturn('foo bar');
           });
-          it('should be true', function() {
+          it('should temporarily always be false', function() {
+            expect(bot.should_repost(tweet)).toBeFalsy();
+          });
+          xit('should be true', function() {
             expect(bot.should_repost(tweet)).toBeTruthy();
           });
-          it('should allow thanksgiving chatter', function() {
+          xit('should allow thanksgiving chatter', function() {
             tweet.text = jasmine.createSpy('is_by').andReturn('i am thankful that thanksgiving is tasty');
             expect(bot.should_repost(tweet)).toBeTruthy();
           });
@@ -136,7 +170,8 @@ describe('TCBot', function() {
         bot.mute = 'true';
       });
       it('should not post', function() {
-        bot.repost();
+        var tweet = jasmine.createSpyObj('tweet', ['to_string']);
+        bot.repost(tweet);
         expect(bot.T.post).not.toHaveBeenCalled();
       });
     });
@@ -146,20 +181,22 @@ describe('TCBot', function() {
         delete(bot.mute);
       });
       it('should process text', function() {
-        var tweet = jasmine.createSpyObj('tweet', ['process_text']);
+        var tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
         tweet.process_text.andReturn('foo bar');
         bot.repost(tweet);
         expect(tweet.process_text).toHaveBeenCalledWith(bot.trim_regex);
       });
       it('should post', function() {
-        var tweet = jasmine.createSpyObj('tweet', ['process_text']);
+        var tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
         tweet.process_text.andReturn('foo bar');
         bot.repost(tweet);
         expect(bot.T.post).toHaveBeenCalledWith(
-          'statuses/update'
-          ,{ status: 'foo bar' }
-          ,jasmine.any(Function)
+          'statuses/update',
+          { status: 'foo bar' },
+          jasmine.any(Function)
         );
+      });
+      xdescribe('with a callback', function() {
       });
     });
   });

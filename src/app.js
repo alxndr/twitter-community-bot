@@ -53,18 +53,8 @@ var webserver = new WebServer({
   posting_as: bot.own_username
 });
 
-/*
-bot.on('posted', function(tweet) {
-  webserver.tweet_posted(tweet);
-});
-
-bot.on('not_posted', function(tweet) {
-  webserver.queue_tweet(tweet);
-});
-*/
-
 webserver.on('tweet_approved', function(tweet, callback) {
-  console.log('app heard tweet_approved, telling bot to repost');
+  console.log('app heard tweet_approved, telling bot to repost', tweet.to_string());
   bot.repost(tweet, callback);
 });
 
