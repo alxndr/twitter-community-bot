@@ -2,12 +2,14 @@ var EE = require('events').EventEmitter;
 var express = require('express');
 var exphbs = require('express3-handlebars');
 
-var WebServer = function() {
+var WebServer = function(config) {
   this.app = express();
   this.port = process.env.PORT || 3000;
   this.stuff = '';
   this.tweets_posted = [];
   this.tweets_queued = {};
+  this.listening_for = config.listening_for;
+  this.posting_as = config.posting_as;
 };
 
 // extend WebServer with EventEmitter
@@ -34,7 +36,9 @@ WebServer.prototype.start = function() {
 WebServer.prototype.render_home = function(req,res) {
   var now = new Date();
   res.render('home', {
-    params: req.params
+      params: req.params
+    , listening_for: this.listening_for
+    , posting_as: this.posting_as
     , tweets_queued: this.tweets_queued
     , tweets_queued_length: this.tweets_queued_id_strs().length
     , tweets_posted: this.tweets_posted

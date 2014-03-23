@@ -28,7 +28,10 @@ var bot = new TCBot({
   mute: process.env.TCB_MUTE
 });
 
-var webserver = new WebServer();
+var webserver = new WebServer({
+  listening_for: bot.term,
+  posting_as: bot.own_username
+});
 
 bot.on('posted', function(tweet) {
   webserver.tweet_posted(tweet);
