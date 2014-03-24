@@ -34,8 +34,7 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
   var tweet = new Tweet(tweet_json);
   console.log('heard: ' + tweet.to_string());
 
-  if (tweet.is_by(this.own_username)) {
-    console.log('found tweet by self; skipping', tweet.to_string());
+  if (this.should_veto(tweet)) {
     return false;
   }
 
@@ -47,13 +46,6 @@ TCBot.prototype.term_mentioned = function(tweet_json) {
 };
 
 TCBot.prototype.should_repost = function(tweet) {
-  if (tweet.is_by(this.own_username)) { // sanity check
-    return false;
-  }
-
-  if (tweet.is_native_retweet()) {
-    return false;
-  }
 
   if (tweet.text().match(/\bthanks\b/i)) {
     return false;
@@ -69,6 +61,16 @@ TCBot.prototype.should_repost = function(tweet) {
   // keep track of why something was blocked?
 
   return false; // short-circuit to queue everything
+};
+
+TCBot.prototype.should_veto = function(tweet) {
+  if (tweet.is_by(this.own_username)) {
+    return true;
+  }
+
+  if (tweet.is_native_retweet()) {
+    return true;
+  }
 };
 
 TCBot.prototype.repost = function(tweet, callback) { // tweet should be JS Tweet instance

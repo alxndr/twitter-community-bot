@@ -26,23 +26,23 @@ describe('TCBot', function() {
   describe('#term_mentioned', function() {
     beforeEach(function() {
       TCBot.__set__({ Tweet : jasmine.createSpy('Tweet spy') });
+      spyOn(bot, 'should_repost');
+      spyOn(bot, 'repost');
+      spyOn(bot, 'queue');
     });
     afterEach(function() {
       delete(TCBot);
     });
 
-    describe('when by ourself', function() {
+    describe('when veto-able', function() {
       beforeEach(function() {
         TCBot.__get__('Tweet').andReturn({
-          to_string: jasmine.createSpy('Tweet#to_string'),
-          is_by: function() { return true; }
+          to_string: jasmine.createSpy('Tweet#to_string')
         });
-        spyOn(bot, 'should_repost');
-        spyOn(bot, 'repost');
-        spyOn(bot, 'queue');
+        spyOn(bot, 'should_veto').andReturn(true);
       });
-      it('should not do anything', function() {
-        bot.term_mentioned();
+      it('should do nothing', function() {
+        expect(bot.term_mentioned()).toBeFalsy();
 
         expect(bot.should_repost).not.toHaveBeenCalled();
         expect(bot.repost).not.toHaveBeenCalled();
@@ -50,29 +50,18 @@ describe('TCBot', function() {
       });
     });
 
-    describe('when not by ourself', function() {
+    describe('when not veto-able', function() {
       beforeEach(function() {
         TCBot.__get__('Tweet').andReturn({
-          is_by: function() { return false; },
-          to_string: function() {},
-          data_for_db: function() {}
+          to_string: jasmine.createSpy('Tweet#to_string')
         });
-        spyOn(bot, 'should_repost');
-        spyOn(bot, 'repost');
-        spyOn(bot, 'queue');
+        spyOn(bot, 'should_veto').andReturn(false);
       });
-
-      it('should create a tweet object', function() {
-        bot.term_mentioned();
-
-        expect(TCBot.__get__('Tweet')).toHaveBeenCalled();
-      });
-
-      describe('when we can repost', function() {
+      describe('when should repost', function() {
         beforeEach(function() {
           bot.should_repost.andReturn(true);
         });
-        it('should call repost', function() {
+        it('should repost', function() {
           bot.term_mentioned();
 
           expect(bot.repost).toHaveBeenCalled();
@@ -80,11 +69,12 @@ describe('TCBot', function() {
         });
       });
 
-      describe('when we cannot repost', function() {
+      describe('when should not repost', function() {
         beforeEach(function() {
           bot.should_repost.andReturn(false);
         });
-        it('should queue the tweet', function() {
+
+        it('should queue', function() {
           bot.term_mentioned();
 
           expect(bot.repost).not.toHaveBeenCalled();
@@ -103,50 +93,63 @@ describe('TCBot', function() {
     afterEach(function() {
       delete(tweet);
     });
-    describe('when tweet is by self', function() {
+    describe('when thanks', function() {
       beforeEach(function() {
-        tweet.is_by = jasmine.createSpy('is_by').andReturn(true);
+        tweet.text = jasmine.createSpy('is_by').andReturn('foo thanks bar');
       });
       it('should be false', function() {
         expect(bot.should_repost(tweet)).toBeFalsy();
       });
     });
-    describe('when tweet is not by self', function() {
+    describe('when not thanks', function() {
+      beforeEach(function() {
+        tweet.text = jasmine.createSpy('is_by').andReturn('foo bar');
+      });
+      it('should temporarily always be false', function() {
+        expect(bot.should_repost(tweet)).toBeFalsy();
+      });
+      xit('should allow thanksgiving chatter', function() {
+        tweet.text = jasmine.createSpy('is_by').andReturn('i am thankful that thanksgiving is tasty');
+        expect(bot.should_repost(tweet)).toBeTruthy();
+      });
+    });
+  });
+
+  describe('#should_veto', function() {
+    var tweet;
+    beforeEach(function() {
+      bot.own_username = 'foo';
+      tweet = {};
+    });
+    afterEach(function() {
+      delete(tweet);
+    });
+    describe('when tweet is by self', function() {
+      beforeEach(function() {
+        tweet.is_by = jasmine.createSpy('is_by').andReturn(true);
+      });
+      it('should be false', function() {
+        expect(bot.should_veto(tweet)).toBeTruthy();
+      });
+    });
+    describe('when tweet not by self', function() {
       beforeEach(function() {
         tweet.is_by = jasmine.createSpy('is_by').andReturn(false);
-        tweet.text = jasmine.createSpy('is_by').andReturn('');
       });
       describe('when tweet is a native RT', function() {
         beforeEach(function() {
           tweet.is_native_retweet = jasmine.createSpy('is_native_retweet').andReturn(true);
         });
-        it('should be false', function() {
-          expect(bot.should_repost(tweet)).toBeFalsy();
+        it('should be true', function() {
+          expect(bot.should_veto(tweet)).toBeTruthy();
         });
       });
-      describe('when tweet is not RT', function() {
+      describe('when tweet not native RT', function() {
         beforeEach(function() {
           tweet.is_native_retweet = jasmine.createSpy('is_native_retweet').andReturn(false);
         });
-        describe('when thanks', function() {
-          beforeEach(function() {
-            tweet.text = jasmine.createSpy('is_by').andReturn('foo thanks bar');
-          });
-          it('should be false', function() {
-            expect(bot.should_repost(tweet)).toBeFalsy();
-          });
-        });
-        describe('when not thanks', function() {
-          beforeEach(function() {
-            tweet.text = jasmine.createSpy('is_by').andReturn('foo bar');
-          });
-          it('should temporarily always be false', function() {
-            expect(bot.should_repost(tweet)).toBeFalsy();
-          });
-          xit('should allow thanksgiving chatter', function() {
-            tweet.text = jasmine.createSpy('is_by').andReturn('i am thankful that thanksgiving is tasty');
-            expect(bot.should_repost(tweet)).toBeTruthy();
-          });
+        it('should be false', function() {
+          expect(bot.should_veto(tweet)).toBeFalsy();
         });
       });
     });
