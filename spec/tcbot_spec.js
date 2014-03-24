@@ -13,73 +13,51 @@ describe('TCBot', function() {
     delete(bot);
   });
 
-  describe('#start', function() {
-    it('should set up a stream', function() {
-      bot.T = jasmine.createSpyObj('T', ['stream']);
-      bot.T.stream.andReturn({on: jasmine.createSpy('T.stream.on')});
-      bot.start();
-      expect(bot.T.stream).toHaveBeenCalled();
-      expect(bot.T.stream().on).toHaveBeenCalled();
-    });
-  });
-
-  describe('#term_mentioned', function() {
+  describe('#repost', function() {
     beforeEach(function() {
-      TCBot.__set__({ Tweet : jasmine.createSpy('Tweet spy') });
-      spyOn(bot, 'should_repost');
-      spyOn(bot, 'repost');
-      spyOn(bot, 'queue');
+      bot.T = jasmine.createSpyObj('T', ['post']);
     });
     afterEach(function() {
-      delete(TCBot);
+      delete(bot.T);
     });
 
-    describe('when veto-able', function() {
+    describe('when mute', function() {
       beforeEach(function() {
-        TCBot.__get__('Tweet').andReturn({
-          to_string: jasmine.createSpy('Tweet#to_string')
-        });
-        spyOn(bot, 'should_veto').andReturn(true);
+        bot.mute = 'true';
       });
-      it('should do nothing', function() {
-        expect(bot.term_mentioned()).toBeFalsy();
-
-        expect(bot.should_repost).not.toHaveBeenCalled();
-        expect(bot.repost).not.toHaveBeenCalled();
-        expect(bot.queue).not.toHaveBeenCalled();
+      it('should not post', function() {
+        var tweet = jasmine.createSpyObj('tweet', ['to_string']);
+        bot.repost(tweet);
+        expect(bot.T.post).not.toHaveBeenCalled();
       });
     });
 
-    describe('when not veto-able', function() {
+    describe('when not mute', function() {
+      var tweet;
+
       beforeEach(function() {
-        TCBot.__get__('Tweet').andReturn({
-          to_string: jasmine.createSpy('Tweet#to_string')
-        });
-        spyOn(bot, 'should_veto').andReturn(false);
+        delete(bot.mute);
+        tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
+        tweet.process_text.andReturn('foo bar');
       });
-      describe('when should repost', function() {
-        beforeEach(function() {
-          bot.should_repost.andReturn(true);
-        });
-        it('should repost', function() {
-          bot.term_mentioned();
-
-          expect(bot.repost).toHaveBeenCalled();
-          expect(bot.queue).not.toHaveBeenCalled();
-        });
+      afterEach(function() {
+        delete tweet;
       });
 
-      describe('when should not repost', function() {
-        beforeEach(function() {
-          bot.should_repost.andReturn(false);
-        });
+      it('should process text', function() {
+        bot.repost(tweet);
 
-        it('should queue', function() {
-          bot.term_mentioned();
+        expect(tweet.process_text).toHaveBeenCalledWith(bot.trim_regex);
+      });
 
-          expect(bot.repost).not.toHaveBeenCalled();
-          expect(bot.queue).toHaveBeenCalled();
-        });
+      it('should post', function() {
+        bot.repost(tweet);
+
+        expect(bot.T.post).toHaveBeenCalledWith( 'statuses/update', { status: 'foo bar' }, jasmine.any(Function));
+      });
+
+      xdescribe('with a callback', function() {
+        // pending... split out T.post handler
       });
     });
   });
@@ -155,51 +133,73 @@ describe('TCBot', function() {
     });
   });
 
-  describe('#repost', function() {
+  describe('#start', function() {
+    it('should set up a stream', function() {
+      bot.T = jasmine.createSpyObj('T', ['stream']);
+      bot.T.stream.andReturn({on: jasmine.createSpy('T.stream.on')});
+      bot.start();
+      expect(bot.T.stream).toHaveBeenCalled();
+      expect(bot.T.stream().on).toHaveBeenCalled();
+    });
+  });
+
+  describe('#term_mentioned', function() {
     beforeEach(function() {
-      bot.T = jasmine.createSpyObj('T', ['post']);
+      TCBot.__set__({ Tweet : jasmine.createSpy('Tweet spy') });
+      spyOn(bot, 'should_repost');
+      spyOn(bot, 'repost');
+      spyOn(bot, 'queue');
     });
     afterEach(function() {
-      delete(bot.T);
+      delete(TCBot);
     });
 
-    describe('when mute', function() {
+    describe('when veto-able', function() {
       beforeEach(function() {
-        bot.mute = 'true';
+        TCBot.__get__('Tweet').andReturn({
+          to_string: jasmine.createSpy('Tweet#to_string')
+        });
+        spyOn(bot, 'should_veto').andReturn(true);
       });
-      it('should not post', function() {
-        var tweet = jasmine.createSpyObj('tweet', ['to_string']);
-        bot.repost(tweet);
-        expect(bot.T.post).not.toHaveBeenCalled();
+      it('should do nothing', function() {
+        expect(bot.term_mentioned()).toBeFalsy();
+
+        expect(bot.should_repost).not.toHaveBeenCalled();
+        expect(bot.repost).not.toHaveBeenCalled();
+        expect(bot.queue).not.toHaveBeenCalled();
       });
     });
 
-    describe('when not mute', function() {
-      var tweet;
-
+    describe('when not veto-able', function() {
       beforeEach(function() {
-        delete(bot.mute);
-        tweet = jasmine.createSpyObj('tweet', ['process_text', 'to_string']);
-        tweet.process_text.andReturn('foo bar');
+        TCBot.__get__('Tweet').andReturn({
+          to_string: jasmine.createSpy('Tweet#to_string')
+        });
+        spyOn(bot, 'should_veto').andReturn(false);
       });
-      afterEach(function() {
-        delete tweet;
-      });
+      describe('when should repost', function() {
+        beforeEach(function() {
+          bot.should_repost.andReturn(true);
+        });
+        it('should repost', function() {
+          bot.term_mentioned();
 
-      it('should process text', function() {
-        bot.repost(tweet);
-
-        expect(tweet.process_text).toHaveBeenCalledWith(bot.trim_regex);
-      });
-
-      it('should post', function() {
-        bot.repost(tweet);
-
-        expect(bot.T.post).toHaveBeenCalledWith( 'statuses/update', { status: 'foo bar' }, jasmine.any(Function));
+          expect(bot.repost).toHaveBeenCalled();
+          expect(bot.queue).not.toHaveBeenCalled();
+        });
       });
 
-      xdescribe('with a callback', function() {
-        // pending... split out T.post handler
+      describe('when should not repost', function() {
+        beforeEach(function() {
+          bot.should_repost.andReturn(false);
+        });
+
+        it('should queue', function() {
+          bot.term_mentioned();
+
+          expect(bot.repost).not.toHaveBeenCalled();
+          expect(bot.queue).toHaveBeenCalled();
+        });
       });
     });
   });
