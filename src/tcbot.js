@@ -113,6 +113,8 @@ TCBot.prototype.should_veto = function(tweet) {
   if (tweet.is_native_retweet()) {
     return true;
   }
+
+  return false;
 };
 
 TCBot.prototype.start = function() {
