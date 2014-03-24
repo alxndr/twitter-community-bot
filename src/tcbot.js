@@ -39,6 +39,20 @@ TCBot.prototype.queue = function(tweet) {
   });
 };
 
+TCBot.prototype.remove_and_emit = function(tweet) {
+  console.log('TCBot#remove_and_emit',tweet.to_string());
+  var self = this;
+  this.TweetModel.findOneAndRemove({tweet_id_str: tweet.id_str}, function(err) {
+    if (err) {
+      console.log(err);
+      console.log('TCBot#remove_and_emit error!');
+      return false;
+    }
+    console.log('removed tweet');
+    self.emit('posted', tweet);
+  });
+};
+
 TCBot.prototype.repost = function(tweet, callback) { // tweet should be JS Tweet instance
   // will emit 'posted' on success or dupe tweet error
   // TODO need a transaction or something
@@ -71,20 +85,6 @@ TCBot.prototype.repost = function(tweet, callback) { // tweet should be JS Tweet
       }
     }
   );
-};
-
-TCBot.prototype.remove_and_emit = function(tweet) {
-  console.log('TCBot#remove_and_emit',tweet.to_string());
-  var self = this;
-  this.TweetModel.findOneAndRemove({tweet_id_str: tweet.id_str}, function(err) {
-    if (err) {
-      console.log(err);
-      console.log('TCBot#remove_and_emit error!');
-      return false;
-    }
-    console.log('removed tweet');
-    self.emit('posted', tweet);
-  });
 };
 
 TCBot.prototype.should_repost = function(tweet) {

@@ -13,6 +13,24 @@ describe('TCBot', function() {
     delete(bot);
   });
 
+  xdescribe('#queue', function() {
+  });
+
+  describe('#remove_and_emit', function() {
+    var tweet;
+    beforeEach(function() {
+      tweet = jasmine.createSpyObj('Tweet instance', ['to_string']);
+      bot.TweetModel = jasmine.createSpyObj('TweetModel', ['findOneAndRemove']);
+      bot.TweetModel.findOneAndRemove.andReturn();
+    });
+
+    it('should find and remove a tweet from the db', function() {
+      bot.remove_and_emit(tweet);
+
+      expect(bot.TweetModel.findOneAndRemove).toHaveBeenCalled();
+    });
+  });
+
   describe('#repost', function() {
     beforeEach(function() {
       bot.T = jasmine.createSpyObj('T', ['post']);
