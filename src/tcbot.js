@@ -23,54 +23,20 @@ var TCBot = function(config) {
 // extend TCBot with EventEmitter
 TCBot.prototype = new EE();
 
-TCBot.prototype.start = function() {
-  var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
-  console.log('listening for "' + this.term + '"');
-  stream.on('tweet', this.term_mentioned.bind(this));
-  stream.on('limit', this.limited.bind(this));
+TCBot.prototype.limited = function() {
+  console.log('*** DEBUG received limited message from twitter');
+  console.log(arguments);
 };
 
-TCBot.prototype.term_mentioned = function(tweet_json) {
-  var tweet = new Tweet(tweet_json);
-  console.log('heard: ' + tweet.to_string());
-
-  if (this.should_veto(tweet)) {
-    return false;
-  }
-
-  if (this.should_repost(tweet)) {
-    this.repost(tweet);
-  } else {
-    this.queue(tweet);
-  }
-};
-
-TCBot.prototype.should_repost = function(tweet) {
-
-  if (tweet.text().match(/\bthanks\b/i)) {
-    return false;
-  }
-
-  // tweet.in_reply_to_screen_name == this.username
-  // tweet.retweet_count > 0 // n.b.: .retweeted is whether we've RT'd
-  // tweet.text().match(/\sRT @\w+/) // non-native RTs
-
-  // TODO
-  // similar tweets
-  // overposts
-  // keep track of why something was blocked?
-
-  return false; // short-circuit to queue everything
-};
-
-TCBot.prototype.should_veto = function(tweet) {
-  if (tweet.is_by(this.own_username)) {
-    return true;
-  }
-
-  if (tweet.is_native_retweet()) {
-    return true;
-  }
+TCBot.prototype.queue = function(tweet) {
+  // will emit 'queued' on success
+  var self = this;
+  console.log('queueing:',tweet.to_string());
+  var tweet_model = new this.TweetModel(tweet.data_for_db());
+  tweet_model.save(function() {
+    console.log('saved');
+    self.emit('queued');
+  });
 };
 
 TCBot.prototype.repost = function(tweet, callback) { // tweet should be JS Tweet instance
@@ -110,27 +76,65 @@ TCBot.prototype.repost = function(tweet, callback) { // tweet should be JS Tweet
 TCBot.prototype.remove_and_emit = function(tweet) {
   console.log('TCBot#remove_and_emit',tweet.to_string());
   var self = this;
-  this.TweetModel.findOneAndRemove({tweet_id_str: tweet.id_str}, function(err, result) { // jshint unused: false
-    //console.log(result);
+  this.TweetModel.findOneAndRemove({tweet_id_str: tweet.id_str}, function(err) {
+    if (err) {
+      console.log(err);
+      console.log('TCBot#remove_and_emit error!');
+      return false;
+    }
     console.log('removed tweet');
     self.emit('posted', tweet);
   });
 };
 
-TCBot.prototype.queue = function(tweet) {
-  // will emit 'queued' on success
-  var self = this;
-  console.log('queueing:',tweet.to_string());
-  var tweet_model = new this.TweetModel(tweet.data_for_db());
-  tweet_model.save(function() {
-    console.log('saved');
-    self.emit('queued');
-  });
+TCBot.prototype.should_repost = function(tweet) {
+
+  if (tweet.text().match(/\bthanks\b/i)) {
+    return false;
+  }
+
+  // tweet.in_reply_to_screen_name == this.username
+  // tweet.retweet_count > 0 // n.b.: .retweeted is whether we've RT'd
+  // tweet.text().match(/\sRT @\w+/) // non-native RTs
+
+  // TODO
+  // similar tweets
+  // overposts
+  // keep track of why something was blocked?
+
+  return false; // short-circuit to queue everything
 };
 
-TCBot.prototype.limited = function() {
-  console.log('*** DEBUG received limited message from twitter');
-  console.log(arguments);
+TCBot.prototype.should_veto = function(tweet) {
+  if (tweet.is_by(this.own_username)) {
+    return true;
+  }
+
+  if (tweet.is_native_retweet()) {
+    return true;
+  }
+};
+
+TCBot.prototype.start = function() {
+  var stream = this.T.stream('statuses/filter', { track: this.term, lang: 'en' });
+  console.log('listening for "' + this.term + '"');
+  stream.on('tweet', this.term_mentioned.bind(this));
+  stream.on('limit', this.limited.bind(this));
+};
+
+TCBot.prototype.term_mentioned = function(tweet_json) {
+  var tweet = new Tweet(tweet_json);
+  console.log('heard: ' + tweet.to_string());
+
+  if (this.should_veto(tweet)) {
+    return false;
+  }
+
+  if (this.should_repost(tweet)) {
+    this.repost(tweet);
+  } else {
+    this.queue(tweet);
+  }
 };
 
 if (module) {
