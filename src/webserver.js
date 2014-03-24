@@ -39,6 +39,29 @@ WebServer.prototype.define_routes = function() {
   this.app.get( '/',                     this.render_home.bind(this));
   this.app.get( '/tweets',               this.all_tweets.bind(this));
   this.app.post('/repost/:tweet_id_str', this.repost_and_redirect.bind(this));
+  this.app.post('/remove/:tweet_id_str', this.remove_tweet.bind(this));
+};
+
+WebServer.prototype.remove_tweet = function(req, res) {
+  console.log('we are in remove_tweet all right');
+  var self = this;
+  this.TweetModel.findOne({tweet_id_str: req.params.tweet_id_str}, function(err, tweet_from_db) {
+    if (!tweet_from_db) {
+      throw new Error('tweet not found with tweet_id_str:' + req.params.tweet_id_str);
+    }
+    var tweet = self.record_to_tweet_instance(tweet_from_db);
+    console.log('deleting:',tweet.to_string());
+    self.TweetModel.findOneAndRemove({tweet_id_str: tweet.id_str}, function(err) {
+      if (err) {
+        console.log(err);
+        console.log('TCBot#remove_and_emit error!');
+        return false;
+      }
+      console.log('removed tweet');
+      console.log('redirecting to /');
+      res.redirect('/');
+    });
+  });
 };
 
 WebServer.prototype.record_to_tweet_instance = function(tweet) {

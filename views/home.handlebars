@@ -6,6 +6,9 @@
         <form action="/repost/{{this.id_str}}" method="post">
           <button type="submit">post</button>
         </form>
+        <form action="/remove/{{this.id_str}}" method="post">
+          <button type="submit">delete</button>
+        </form>
         {{{this.to_html}}}
         <span class="link">[<a href="{{url}}">link</a>]</span>
       </li>
