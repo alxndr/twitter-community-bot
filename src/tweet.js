@@ -1,4 +1,4 @@
-/* global module */
+/* global module, console */
 
 // TODO convert to revealing module pattern
 
@@ -40,8 +40,14 @@ Tweet.prototype.is_by = function(name) {
 };
 
 Tweet.prototype.is_native_retweet = function() {
-  // in_reply_to_status_id_str is for "replies"
-  if (this.retweeted_status) {
+  // n.b. none of these are the property we want:
+  // in_reply_to_screen_name: "If the represented Tweet is a reply, this field will contain the screen name of the original Tweet's author"
+  // in_reply_to_status_id_str: "If the represented Tweet is a reply, this field will contain the string representation of the original Tweet's ID"
+  // retweet_count: "Number of times this Tweet has been retweeted"
+  // retweeted: "Indicates whether this Tweet has been retweeted by the authenticating user"
+
+  if (this.tweet_json.retweeted_status) {
+    console.log('found a retweet!!', this.to_string());
     return true;
   }
   return false;

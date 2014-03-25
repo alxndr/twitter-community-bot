@@ -89,7 +89,10 @@ describe('Tweet', function() {
   describe('#is_native_retweet', function() {
     describe('when retweeted_status is present', function() {
       beforeEach(function() {
-        tweet.retweeted_status = {some:'object'};
+        tweet.tweet_json.retweeted_status = true;
+      });
+      afterEach(function() {
+        delete(tweet.tweet_json.retweeted_status);
       });
       it('should return true', function() {
         expect(tweet.is_native_retweet()).toBeTruthy();
@@ -98,7 +101,10 @@ describe('Tweet', function() {
 
     describe('when retweeted_status is not', function() {
       beforeEach(function() {
-        delete(tweet.retweeted_status);
+        tweet.tweet_json.retweeted_status = false;
+      });
+      afterEach(function() {
+        delete(tweet.tweet_json.retweeted_status);
       });
       it('should return false', function() {
         expect(tweet.is_native_retweet()).toBeFalsy();
