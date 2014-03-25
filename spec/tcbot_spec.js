@@ -91,7 +91,8 @@ describe('TCBot', function() {
     });
     describe('when thanks', function() {
       beforeEach(function() {
-        tweet.text = jasmine.createSpy('is_by').andReturn('foo thanks bar');
+        tweet.text = jasmine.createSpy().andReturn('foo thanks bar');
+        tweet.tweet_json = {in_reply_to_screen_name: 'foo'};
       });
       it('should be false', function() {
         expect(bot.should_repost(tweet)).toBeFalsy();
@@ -99,7 +100,8 @@ describe('TCBot', function() {
     });
     describe('when not thanks', function() {
       beforeEach(function() {
-        tweet.text = jasmine.createSpy('is_by').andReturn('foo bar');
+        tweet.text = jasmine.createSpy().andReturn('foo bar');
+        tweet.tweet_json = {in_reply_to_screen_name: 'foo'};
       });
       it('should temporarily always be false', function() {
         expect(bot.should_repost(tweet)).toBeFalsy();

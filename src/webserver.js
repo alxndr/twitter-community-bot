@@ -128,7 +128,6 @@ WebServer.prototype.update_queued_tweets = function(callback) {
       return console.log('error', err, tweets);
     }
     self.queued_tweets = tweets.map(self.record_to_tweet_instance.bind(this));
-    console.log('found tweets in db:', self.queued_tweets.map(function(tweet) { return tweet.to_string(); }));
     callback();
     return tweets;
   });

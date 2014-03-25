@@ -93,14 +93,15 @@ TCBot.prototype.should_repost = function(tweet) {
     return false;
   }
 
-  // tweet.in_reply_to_screen_name == this.username
-  // tweet.retweet_count > 0 // n.b.: .retweeted is whether we've RT'd
-  // tweet.text().match(/\sRT @\w+/) // non-native RTs
+  if (tweet.tweet_json.in_reply_to_screen_name === this.own_username) {
+    return false;
+  }
 
   // TODO
-  // similar tweets
-  // overposts
-  // keep track of why something was blocked?
+  // similar tweets (need to log text)
+  // overposts (need to log author + date)
+  // keep track of why something was vetoed or held?
+  // tweet.text().match(/\sRT @\w+/) // non-native RTs
 
   return false; // short-circuit to queue everything
 };

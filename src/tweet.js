@@ -1,4 +1,4 @@
-/* global module, console */
+/* global module */
 
 // TODO convert to revealing module pattern
 
@@ -47,7 +47,6 @@ Tweet.prototype.is_native_retweet = function() {
   // retweeted: "Indicates whether this Tweet has been retweeted by the authenticating user"
 
   if (this.tweet_json.retweeted_status) {
-    console.log('found a retweet!!', this.to_string());
     return true;
   }
   return false;
