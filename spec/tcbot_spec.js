@@ -116,7 +116,6 @@ describe('TCBot', function() {
   describe('#should_veto', function() {
     var tweet;
     beforeEach(function() {
-      bot.own_username = 'foo';
       tweet = {};
     });
     afterEach(function() {
