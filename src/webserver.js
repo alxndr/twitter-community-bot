@@ -128,10 +128,23 @@ WebServer.prototype.update_queued_tweets = function(callback) {
       return console.log('error', err, tweets);
     }
     self.queued_tweets = tweets.map(self.record_to_tweet_instance.bind(this));
+    self.queued_tweets.sort(created_at_asc);
     callback();
     return tweets;
   });
 };
+
+function created_at_asc(a, b) {
+  var date_a = new Date(a.tweet_json.created_at),
+      date_b = new Date(b.tweet_json.created_at);
+  if (date_a > date_b) {
+    return 1;
+  }
+  if (date_a < date_b) {
+    return -1;
+  }
+  return 0;
+}
 
 if (module) {
   module.exports = WebServer;

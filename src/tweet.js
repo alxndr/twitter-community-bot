@@ -1,12 +1,15 @@
-/* global module */
+/* global module, require */
+
+var moment = require('moment');
 
 // TODO convert to revealing module pattern
-
 var Tweet = function(tweet_json) {
   this.tweet_json = tweet_json;
   this.id_str = this.tweet_json.id_str; // number is too big for js ints
   this.username = tweet_json.user.screen_name;
   this.url = this.determine_url();
+  this.processed_text = this.process_text();
+  this.display_date = moment(this.tweet_json.created_at).format('D MMM YYYY hh:mm ZZ');
 };
 
 Tweet.prototype.data_for_db = function() {
@@ -64,18 +67,6 @@ Tweet.prototype.process_text = function(username_regex) {
 
 Tweet.prototype.text = function() {
   return this.tweet_json.text;
-};
-
-Tweet.prototype.to_html = function() {
-  var html = [];
-  html.push('<span class="tweet">');
-  html.push(  '<span class="user">');
-  html.push(    '<a href="http://twitter.com/' + this.tweet_json.user.screen_name + '">@' + this.tweet_json.user.screen_name + '</a>');
-  html.push(  '</span>');
-  html.push(  '<span class="text">' + this.tweet_json.text + '</span>');
-  html.push(  '<span class="date">' + this.tweet_json.created_at.substring(0, 19) + '</span>');
-  html.push('</span>');
-  return html.join(' ');
 };
 
 Tweet.prototype.to_string = function() {

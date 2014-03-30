@@ -10,13 +10,14 @@ li form { float: left; }
 
 button[type='submit'] { color: blue; font-weight: bold; }
 .tweet { }
+.tweet .date:before { content: 'at '; }
+.tweet .date { font-size: 0.9em; color: gray; }
 .tweet .user { }
 .tweet .user:after { content: ' wrote:'; }
 .tweet .text { }
 .tweet .text:before,
 .tweet .text:after { content: '"'; }
-.tweet .date:before { content: 'at '; }
-.tweet .date { font-size: 0.9em; color: gray; }
+.tweet .processed { display: none; }
 
 footer { position: fixed; bottom: 0; font-size: 0.8em; }
 footer dl>* { display: inline; }
