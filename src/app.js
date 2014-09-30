@@ -1,4 +1,4 @@
-/* global process, require, console */
+/* global process */
 
 require('newrelic');
 

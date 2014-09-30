@@ -1,0 +1,6 @@
+{
+  "maxlen": 120,
+  "browser": true,
+  "asi": false,
+  "predef": [ "console", "require" ]
+}
