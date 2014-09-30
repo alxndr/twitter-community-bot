@@ -1,4 +1,4 @@
-/* global process, require, console */
+/* global process */
 
 require('newrelic');
 
@@ -55,7 +55,7 @@ var webserver = new WebServer({
 });
 
 webserver.on('tweet_approved', function(tweet, callback) {
-  console.log('app heard tweet_approved, telling bot to repost', tweet.to_string());
+  console.log("app heard tweet_approved, telling bot to repost", tweet.to_string());
   bot.repost(tweet, callback);
 });
 
