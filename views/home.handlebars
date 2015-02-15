@@ -5,7 +5,7 @@
       {{! TODO split into partial}}
       <li>
         <form action="/repost/{{id_str}}" method="post"> <button type="submit">post</button> </form>
-        <form action="/remove/{{id_str}}" method="post"> <button type="submit">delete</button> </form>
+        <form action="/remove/{{id_str}}" method="post"> <button type="submit" class="delete">delete</button> </form>
         <span class="tweet">
           <span class="date">{{display_date}}</span>
           <span class="user"><a href="http://twitter.com/{{tweet_json.user.screen_name}}">@{{tweet_json.user.screen_name}}</a></span>

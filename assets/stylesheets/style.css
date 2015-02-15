@@ -9,7 +9,7 @@ li { clear: left; margin-bottom: 1em; list-style: none; }
 li form { float: left; }
 
 button[type='submit'] { color: blue; font-weight: bold; }
-form[action^='/remove/'] button[type=submit] { color: red; }
+button.delete { color: red; }
 .tweet { }
 .tweet .date:before { content: 'at '; }
 .tweet .date { font-size: 0.9em; color: gray; }
